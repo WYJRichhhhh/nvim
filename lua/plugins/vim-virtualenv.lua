@@ -1,0 +1,3 @@
+return {
+  'jmcantrell/vim-virtualenv',
+}

@@ -1,0 +1,175 @@
+{
+  "Class": {
+    "prefix": "class",
+    "body": [
+      "class ${1:ClassName}:",
+      "\t\"\"\"${2:Description of the class}",
+      "\t",
+      "\tAttributes:",
+      "\t\t${3:attr1}: ${4:Description of attr1}",
+      "\t\"\"\"",
+      "\t",
+      "\tdef __init__(self, ${5:params}):",
+      "\t\t\"\"\"初始化方法",
+      "\t\t",
+      "\t\tArgs:",
+      "\t\t\t${5:params}: ${6:参数描述}",
+      "\t\t\"\"\"",
+      "\t\t${7:# 实现代码}",
+      "\t\t$0"
+    ],
+    "description": "创建一个Python类"
+  },
+  "Function": {
+    "prefix": "def",
+    "body": [
+      "def ${1:function_name}(${2:params}):",
+      "\t\"\"\"${3:函数描述}",
+      "\t",
+      "\tArgs:",
+      "\t\t${2:params}: ${4:参数描述}",
+      "\t",
+      "\tReturns:",
+      "\t\t${5:返回值描述}",
+      "\t\"\"\"",
+      "\t${6:# 实现代码}",
+      "\t$0"
+    ],
+    "description": "创建一个Python函数"
+  },
+  "Method": {
+    "prefix": "defm",
+    "body": [
+      "def ${1:method_name}(self, ${2:params}):",
+      "\t\"\"\"${3:方法描述}",
+      "\t",
+      "\tArgs:",
+      "\t\t${2:params}: ${4:参数描述}",
+      "\t",
+      "\tReturns:",
+      "\t\t${5:返回值描述}",
+      "\t\"\"\"",
+      "\t${6:# 实现代码}",
+      "\t$0"
+    ],
+    "description": "创建一个类方法"
+  },
+  "Property": {
+    "prefix": "prop",
+    "body": [
+      "@property",
+      "def ${1:property_name}(self):",
+      "\t\"\"\"${2:属性描述}",
+      "\t",
+      "\tReturns:",
+      "\t\t${3:返回值描述}",
+      "\t\"\"\"",
+      "\t${4:# 实现代码}",
+      "\treturn ${5:value}",
+      "\t$0"
+    ],
+    "description": "创建一个属性"
+  },
+  "If": {
+    "prefix": "if",
+    "body": [
+      "if ${1:condition}:",
+      "\t${2:# 实现代码}",
+      "\t$0"
+    ],
+    "description": "If语句"
+  },
+  "IfElse": {
+    "prefix": "ife",
+    "body": [
+      "if ${1:condition}:",
+      "\t${2:# 实现代码}",
+      "else:",
+      "\t${3:# 实现代码}",
+      "\t$0"
+    ],
+    "description": "If-Else语句"
+  },
+  "For": {
+    "prefix": "for",
+    "body": [
+      "for ${1:item} in ${2:iterable}:",
+      "\t${3:# 实现代码}",
+      "\t$0"
+    ],
+    "description": "For循环"
+  },
+  "While": {
+    "prefix": "while",
+    "body": [
+      "while ${1:condition}:",
+      "\t${2:# 实现代码}",
+      "\t$0"
+    ],
+    "description": "While循环"
+  },
+  "TryCatch": {
+    "prefix": "try",
+    "body": [
+      "try:",
+      "\t${1:# 尝试执行的代码}",
+      "except ${2:Exception} as ${3:e}:",
+      "\t${4:# 异常处理}",
+      "\t$0"
+    ],
+    "description": "Try-Except块"
+  },
+  "TryFinally": {
+    "prefix": "tryf",
+    "body": [
+      "try:",
+      "\t${1:# 尝试执行的代码}",
+      "except ${2:Exception} as ${3:e}:",
+      "\t${4:# 异常处理}",
+      "finally:",
+      "\t${5:# 无论如何都会执行的代码}",
+      "\t$0"
+    ],
+    "description": "Try-Except-Finally块"
+  },
+  "Import": {
+    "prefix": "imp",
+    "body": [
+      "import ${1:module}",
+      "$0"
+    ],
+    "description": "导入模块"
+  },
+  "FromImport": {
+    "prefix": "fimp",
+    "body": [
+      "from ${1:module} import ${2:name}",
+      "$0"
+    ],
+    "description": "从模块导入"
+  },
+  "Main": {
+    "prefix": "main",
+    "body": [
+      "def main():",
+      "\t${1:# 主函数实现}",
+      "\t$0",
+      "",
+      "",
+      "if __name__ == \"__main__\":",
+      "\tmain()"
+    ],
+    "description": "主函数模板"
+  },
+  "Docstring": {
+    "prefix": "doc",
+    "body": [
+      "\"\"\"${1:简短描述}",
+      "",
+      "${2:详细描述}",
+      "\"\"\"",
+      "$0"
+    ],
+    "description": "文档字符串"
+  }
+} 
