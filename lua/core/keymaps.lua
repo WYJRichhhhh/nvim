@@ -143,46 +143,23 @@ keymap.set("n", "ge", "<cmd>lua vim.diagnostic.goto_next()<CR>", { desc = "跳�
 -- )
 
 -- Debugging
-keymap.set("n", "<leader>bb", "<cmd>lua require'dap'.toggle_breakpoint()<cr>", { desc = "Toggle断点" })
-keymap.set(
-    "n",
-    "<leader>bc",
-    "<cmd>lua require'dap'.set_breakpoint(vim.fn.input('Breakpoint condition: '))<cr>",
-    { desc = "设置条件断点" }
-)
-keymap.set(
-    "n",
-    "<leader>bl",
-    "<cmd>lua require'dap'.set_breakpoint(nil, nil, vim.fn.input('Log point message: '))<cr>",
-    { desc = "设置日志断点" }
-)
-keymap.set("n", "<leader>br", "<cmd>lua require'dap'.clear_breakpoints()<cr>", { desc = "清空断点" })
-keymap.set("n", "<leader>ba", "<cmd>Telescope dap list_breakpoints<cr>", { desc = "列出所有断点" })
-keymap.set("n", "<leader>dc", "<cmd>lua require'dap'.continue()<cr>", { desc = "继续执行" })
-keymap.set("n", "<leader>dj", "<cmd>lua require'dap'.step_over()<cr>", { desc = "跳过" })
-keymap.set("n", "<leader>dk", "<cmd>lua require'dap'.step_into()<cr>", { desc = "步入" })
-keymap.set("n", "<leader>dl", "<cmd>lua require'dap'.step_out()<cr>", { desc = "步出" })
-keymap.set("n", "<leader>dd", function()
-    require("dap").disconnect()
-    require("dapui").close()
-end, { desc = "断开连接并关闭UI" })
-keymap.set("n", "<leader>dt", function()
-    require("dap").terminate()
-    require("dapui").close()
-end, { desc = "终止并关闭UI" })
--- REPL 是 Read Eval Print Loop 的缩写，表示一种交互式的命令行环境
--- 用户输入代码或命令（Read）,即时执行（Eval）, 并输出结果（Print）, 然后等待用户输入下一条命令（Loop）
-keymap.set("n", "<leader>dr", "<cmd>lua require'dap'.repl.toggle()<cr>", { desc = "切换REPL" })
-keymap.set("n", "<leader>dd", "<cmd>lua require'dap'.run_last()<cr>", { desc = "运行最后一个" })
-keymap.set("n", "<leader>di", function()
-    require("dap.ui.widgets").hover()
-end, { desc = "悬停查看" })
-keymap.set("n", "<leader>d?", function()
-    local widgets = require("dap.ui.widgets")
-    widgets.centered_float(widgets.scopes)
-end, { desc = "显示范围" })
-keymap.set("n", "<leader>df", "<cmd>Telescope dap frames<cr>", { desc = "显示帧" })
-keymap.set("n", "<leader>dh", "<cmd>Telescope dap commands<cr>", { desc = "显示命令" })
+keymap.set("n", "<leader>bb", function() require("dap").toggle_breakpoint() end, { desc = "调试: 切换断点" })
+keymap.set("n", "<leader>eb", function() require("dap").set_breakpoint(vim.fn.input("Breakpoint condition: ")) end, { desc = "调试: 编辑断点" })
+keymap.set("n", "<leader>dc", function() require("dap").continue() end, { desc = "调试: 继续" })
+keymap.set("n", "<leader>do", function() require("dap").step_over() end, { desc = "调试: 单步跳过" })
+keymap.set("n", "<leader>di", function() require("dap").step_into() end, { desc = "调试: 单步进入" })
+keymap.set("n", "<leader>dr", function() require("dap").repl.open() end, { desc = "调试: 打开REPL" })
+keymap.set("n", "<leader>dx", function() require("dap").terminate() end, { desc = "调试: 终止" })
+keymap.set("n", "<leader>raB", function() require("dap").clear_breakpoints() end, { desc = "调试: 清除所有断点" })
+keymap.set("n", "<leader>pp", function() require("dapui").toggle() end, { desc = "调试: 显示执行点" })
+keymap.set("n", "<leader>fr", function() require("dap").run_last() end, { desc = "调试: 强制返回" })
+keymap.set("n", "<leader>fc", function() require("dap").run_to_cursor() end, { desc = "调试: 运行到光标" })
+keymap.set("n", "<leader>ds", function() require("telescope").extensions.dap.frames() end, { desc = "调试: 显示帧" })
+keymap.set("n", "<leader>di", function() require("telescope").extensions.dap.list_breakpoints() end, { desc = "调试: 列出断点" })
+keymap.set("n", "<leader>dS", function() require("telescope").extensions.dap.variables() end, { desc = "调试: 显示变量" })
+keymap.set("n", "<leader>dh", function() require("dap.ui.widgets").hover() end, { desc = "调试: 悬停显示" })
+keymap.set("n", "<leader>d?", function() require("dap.ui.widgets").preview() end, { desc = "调试: 预览" })
+keymap.set("n", "<leader>dc", function() require("dap.ui.widgets").centered_float(require("dap.ui.widgets").scopes) end, { desc = "调试: 显示作用域" })
 
 -- nvterm
 keymap.set({ "t", "n" }, "<A-i>", function()
@@ -253,3 +230,42 @@ function RevealInMiniFiles()
   local path = vim.fn.expand("%:p:h") -- 获取当前文件的目录路径
   require("mini.files").open(path)    -- 在 mini.files 中打开该目录
 end
+
+-- Python相关快捷键
+-- 环境管理
+keymap.set("n", "<leader>pi", ":Autoflake<CR>", { desc = "移除未使用的导入" })
+
+-- 调试相关
+keymap.set("n", "<leader>bb", function() require("dap").toggle_breakpoint() end, { desc = "调试: 切换断点" })
+keymap.set("n", "<leader>eb", function() require("dap").set_breakpoint(vim.fn.input("Breakpoint condition: ")) end, { desc = "调试: 编辑断点" })
+keymap.set("n", "<leader>dc", function() require("dap").continue() end, { desc = "调试: 继续" })
+keymap.set("n", "<leader>do", function() require("dap").step_over() end, { desc = "调试: 单步跳过" })
+keymap.set("n", "<leader>di", function() require("dap").step_into() end, { desc = "调试: 单步进入" })
+keymap.set("n", "<leader>dr", function() require("dap").repl.open() end, { desc = "调试: 打开REPL" })
+keymap.set("n", "<leader>dx", function() require("dap").terminate() end, { desc = "调试: 终止" })
+keymap.set("n", "<leader>raB", function() require("dap").clear_breakpoints() end, { desc = "调试: 清除所有断点" })
+keymap.set("n", "<leader>pp", function() require("dapui").toggle() end, { desc = "调试: 显示执行点" })
+keymap.set("n", "<leader>fr", function() require("dap").run_last() end, { desc = "调试: 强制返回" })
+keymap.set("n", "<leader>fc", function() require("dap").run_to_cursor() end, { desc = "调试: 运行到光标" })
+keymap.set("n", "<leader>ds", function() require("telescope").extensions.dap.frames() end, { desc = "调试: 显示帧" })
+keymap.set("n", "<leader>di", function() require("telescope").extensions.dap.list_breakpoints() end, { desc = "调试: 列出断点" })
+keymap.set("n", "<leader>dS", function() require("telescope").extensions.dap.variables() end, { desc = "调试: 显示变量" })
+keymap.set("n", "<leader>dh", function() require("dap.ui.widgets").hover() end, { desc = "调试: 悬停显示" })
+keymap.set("n", "<leader>d?", function() require("dap.ui.widgets").preview() end, { desc = "调试: 预览" })
+keymap.set("n", "<leader>dc", function() require("dap.ui.widgets").centered_float(require("dap.ui.widgets").scopes) end, { desc = "调试: 显示作用域" })
+
+-- 测试相关
+keymap.set("n", "<leader>rr", function() require("neotest").run.run_last() end, { desc = "测试: 运行上次" })
+keymap.set("n", "<leader>rn", function() require("neotest").run.run() end, { desc = "测试: 运行当前" })
+keymap.set("n", "<leader>dd", function() require("neotest").run.run_last({ strategy = "dap" }) end, { desc = "测试: 调试上次" })
+keymap.set("n", "<leader>dn", function() require("neotest").run.run({ strategy = "dap" }) end, { desc = "测试: 调试当前" })
+keymap.set("n", "<leader>cc", function() require("neotest").run.run_last({ strategy = "dap", coverage = true }) end, { desc = "测试: 覆盖率上次" })
+keymap.set("n", "<leader>cn", function() require("neotest").run.run({ strategy = "dap", coverage = true }) end, { desc = "测试: 覆盖率当前" })
+keymap.set("n", "<leader>ts", function() require("neotest").summary.toggle() end, { desc = "测试: 切换摘要" })
+
+-- 重构相关
+keymap.set("v", "<leader>em", function() require("refactoring").refactor("Extract Function") end, { desc = "重构: 提取方法" })
+keymap.set("v", "<leader>ev", function() require("refactoring").refactor("Extract Variable") end, { desc = "重构: 提取变量" })
+keymap.set("n", "<leader>ri", function() require("refactoring").refactor("Inline Variable") end, { desc = "重构: 内联变量" })
+keymap.set("n", "<leader>re", function() vim.lsp.buf.rename() end, { desc = "重构: 重命名" })
+keymap.set("n", "<leader>mv", function() vim.lsp.buf.code_action({ context = { only = { "refactor.move" } } }) end, { desc = "重构: 移动" })

@@ -18,6 +18,26 @@ return {
                 -- 自动导入功能
                 autoImportCompletions = true,
               },
+              -- 设置Python路径
+              pythonPath = function()
+                local venv = os.getenv("VIRTUAL_ENV")
+                if venv then
+                  return venv .. "/bin/python"
+                end
+                return "/usr/bin/python3"
+              end,
+              -- 设置额外的Python路径
+              extraPaths = function()
+                local paths = {}
+                -- 添加项目根目录
+                table.insert(paths, vim.fn.getcwd())
+                -- 添加虚拟环境site-packages
+                local venv = os.getenv("VIRTUAL_ENV")
+                if venv then
+                  table.insert(paths, venv .. "/lib/python*/site-packages")
+                end
+                return paths
+              end,
             },
           },
         },
@@ -59,22 +79,60 @@ return {
   },
   {
     -- Python环境管理
-    "ChristianChiarulli/swenv.nvim",
+    "linux-cultist/venv-selector.nvim",
     ft = "python",
-    dependencies = {
-      "nvim-lua/plenary.nvim",
+    dependencies = { 
+      "neovim/nvim-lspconfig", 
+      "nvim-telescope/telescope.nvim" 
     },
     config = function()
-      require("swenv").setup({
-        -- 自动检测Python项目虚拟环境
+      require("venv-selector").setup({
+        name = ".venv",
+        auto_refresh = true,
+        search = true,
+        search_venv_managers = true,
+        search_workspace = true,
+        dap_enabled = true,
+        parents = 0,
+        auto_refresh_on_write = true,
+        -- 新增配置
+        search_dir = function()
+          return vim.fn.getcwd()
+        end,
+        -- 自动检测并激活虚拟环境
+        auto_refresh_on_write = true,
+        -- 在状态栏显示当前环境
+        status_line = true,
+        -- 在切换环境时自动重启LSP
         post_set_venv = function()
-          -- 当切换环境时，重启所有Python相关LSP
           vim.cmd("LspRestart")
         end,
+        -- 搜索路径配置
+        search_paths = {
+          "./venv",
+          "./.venv",
+          "./.env",
+          vim.fn.expand("~/.virtualenvs"),
+          vim.fn.expand("~/.pyenv/versions"),
+        },
+        -- 虚拟环境创建命令
+        create_venv = function(path)
+          return string.format("python -m venv %s", path)
+        end,
+        -- 虚拟环境激活命令
+        activate_venv = function(path)
+          if vim.fn.has("win32") == 1 then
+            return path .. "/Scripts/activate"
+          else
+            return "source " .. path .. "/bin/activate"
+          end
+        end,
       })
-      -- 设置快捷键来管理Python环境
-      vim.keymap.set("n", "<leader>pe", function() require("swenv.api").pick_venv() end, { desc = "选择Python环境" })
-      vim.keymap.set("n", "<leader>pc", function() require("swenv.api").get_current_venv() end, { desc = "显示当前Python环境" })
+
+      -- 设置快捷键
+      vim.keymap.set("n", "<leader>pe", "<cmd>VenvSelect<cr>", { desc = "选择Python环境" })
+      vim.keymap.set("n", "<leader>pc", "<cmd>VenvSelectCached<cr>", { desc = "显示当前Python环境" })
+      vim.keymap.set("n", "<leader>pn", "<cmd>VenvSelectCreate<cr>", { desc = "创建新的Python环境" })
     end,
   },
   {
@@ -107,6 +165,8 @@ return {
     dependencies = {
       "mfussenegger/nvim-dap",
       "rcarriga/nvim-dap-ui",
+      "theHamsta/nvim-dap-virtual-text",
+      "nvim-telescope/telescope-dap.nvim",
     },
     config = function()
       -- 自动检测当前活动的Python解释器
@@ -128,14 +188,76 @@ return {
       end
 
       -- 设置Python调试器
-      require("dap-python").setup(get_python_path())
+      require("dap-python").setup(get_python_path(), {
+        -- 调试器配置
+        dap = {
+          justMyCode = false,  -- 允许调试第三方库代码
+          console = "integratedTerminal",  -- 使用集成终端
+        },
+      })
+      
+      -- 设置调试器UI
+      require("dapui").setup({
+        layouts = {
+          {
+            elements = {
+              { id = "scopes", size = 0.25 },
+              { id = "breakpoints", size = 0.25 },
+              { id = "stacks", size = 0.25 },
+              { id = "watches", size = 0.25 },
+            },
+            position = "left",
+            size = 40,
+          },
+          {
+            elements = {
+              { id = "repl", size = 1 },
+            },
+            position = "bottom",
+            size = 10,
+          },
+        },
+      })
+      
+      -- 设置虚拟文本显示
+      require("nvim-dap-virtual-text").setup({
+        enabled = true,
+        display_callback = function(variable, _buf, _stackframe, _node)
+          return string.format(" %s = %s", variable.name, variable.value)
+        end,
+        highlight_changed_variables = true,
+        highlight_new_as_changed = true,
+        show_stop_reason = true,
+        commented = false,
+        only_first_definition = true,
+        all_references = false,
+        filter_references_pattern = "<module",
+        -- 实验性功能
+        virt_text_pos = "eol",
+        all_frames = false,
+        virt_lines = false,
+        virt_text_win_col = nil,
+      })
       
       -- 设置调试器快捷键
       vim.keymap.set("n", "<leader>db", function() require("dap").toggle_breakpoint() end, { desc = "调试: 切换断点" })
+      vim.keymap.set("n", "<leader>dB", function() require("dap").set_breakpoint(vim.fn.input("Breakpoint condition: ")) end, { desc = "调试: 设置条件断点" })
       vim.keymap.set("n", "<leader>dc", function() require("dap").continue() end, { desc = "调试: 继续" })
       vim.keymap.set("n", "<leader>do", function() require("dap").step_over() end, { desc = "调试: 单步跳过" })
       vim.keymap.set("n", "<leader>di", function() require("dap").step_into() end, { desc = "调试: 单步进入" })
       vim.keymap.set("n", "<leader>dr", function() require("dap").repl.open() end, { desc = "调试: 打开REPL" })
+      vim.keymap.set("n", "<leader>dl", function() require("dap").run_last() end, { desc = "调试: 运行上次" })
+      vim.keymap.set("n", "<leader>du", function() require("dapui").toggle() end, { desc = "调试: 切换UI" })
+      vim.keymap.set("n", "<leader>dx", function() require("dap").terminate() end, { desc = "调试: 终止" })
+      vim.keymap.set("n", "<leader>dC", function() require("dap").clear_breakpoints() end, { desc = "调试: 清除所有断点" })
+      vim.keymap.set("n", "<leader>de", function() require("dap").eval() end, { desc = "调试: 评估表达式" })
+      vim.keymap.set("n", "<leader>dE", function() require("dap").eval(vim.fn.input("Expression: ")) end, { desc = "调试: 评估输入表达式" })
+      vim.keymap.set("n", "<leader>df", function() require("telescope").extensions.dap.frames() end, { desc = "调试: 显示帧" })
+      vim.keymap.set("n", "<leader>di", function() require("telescope").extensions.dap.list_breakpoints() end, { desc = "调试: 列出断点" })
+      vim.keymap.set("n", "<leader>dS", function() require("telescope").extensions.dap.variables() end, { desc = "调试: 显示变量" })
+      vim.keymap.set("n", "<leader>dh", function() require("dap.ui.widgets").hover() end, { desc = "调试: 悬停显示" })
+      vim.keymap.set("n", "<leader>d?", function() require("dap.ui.widgets").preview() end, { desc = "调试: 预览" })
+      vim.keymap.set("n", "<leader>dc", function() require("dap.ui.widgets").centered_float(require("dap.ui.widgets").scopes) end, { desc = "调试: 显示作用域" })
     end,
   },
   {
