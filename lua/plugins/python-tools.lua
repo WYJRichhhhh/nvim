@@ -10,7 +10,7 @@ return {
     },
     cmd = "Neotree",
     keys = {
-      { "<leader>fp", "<cmd>Neotree toggle<CR>", desc = "打开项目导航器" },
+      { "<leader>e", "<cmd>Neotree toggle<CR>", desc = "打开项目导航器" },
     },
     config = function()
       require("neo-tree").setup({
