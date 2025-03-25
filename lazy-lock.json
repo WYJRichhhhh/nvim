@@ -22,7 +22,7 @@
   "formatter.nvim": { "branch": "master", "commit": "eb89a1f3e079f1b9680bc7293b75fffccb5e1598" },
   "friendly-snippets": { "branch": "main", "commit": "efff286dd74c22f731cdec26a70b46e5b203c619" },
   "gitsigns.nvim": { "branch": "main", "commit": "7010000889bfb6c26065e0b0f7f1e6aa9163edd9" },
-  "go.nvim": { "branch": "master", "commit": "dfebd810ef38805c71a00a22a19c8bd8afcfcf25" },
+  "go.nvim": { "branch": "master", "commit": "0d426e87227dd14584881ecc595c173121456111" },
   "grug-far.nvim": { "branch": "main", "commit": "2c7ef09353714bd4954f5459d9a7e2579a050dc7" },
   "guihua.lua": { "branch": "master", "commit": "d783191eaa75215beae0c80319fcce5e6b3beeda" },
   "harpoon": { "branch": "master", "commit": "1bc17e3e42ea3c46b33c0bbad6a880792692a1b3" },
@@ -67,7 +67,7 @@
   "overseer.nvim": { "branch": "master", "commit": "d95931e9e8cc4429819c8bbae395da00a6800d1e" },
   "plenary.nvim": { "branch": "master", "commit": "857c5ac632080dba10aae49dba902ce3abf91b35" },
   "quickfixdd": { "branch": "master", "commit": "cc1adb7e7e9f4827cd655f6b1c05fadedaa87f45" },
-  "render-markdown.nvim": { "branch": "main", "commit": "7bf951b8ad93d47b90be290be6fc60da5788ddaa" },
+  "render-markdown.nvim": { "branch": "main", "commit": "c21693fb68ebc5bcba9d73d9f81146007d025586" },
   "resession.nvim": { "branch": "master", "commit": "fd08e476c4e2f826905c384a3a301a821758764b" },
   "telescope-dap.nvim": { "branch": "master", "commit": "783366bd6c1e7fa0a5c59c07db37f49c805a28df" },
   "telescope-fzf-native.nvim": { "branch": "main", "commit": "1f08ed60cafc8f6168b72b80be2b2ea149813e55" },
@@ -83,6 +83,5 @@
   "vim-python-pep8-indent": { "branch": "master", "commit": "60ba5e11a61618c0344e2db190210145083c91f8" },
   "vim-rest-console": { "branch": "master", "commit": "7b407f47185468d1b57a8bd71cdd66c9a99359b2" },
   "vim-tmux-navigator": { "branch": "master", "commit": "791dacfcfc8ccb7f6eb1c853050883b03e5a22fe" },
-  "vim-virtualenv": { "branch": "master", "commit": "b81912f090918ec63b98d0f41117fb44c0afe646" },
   "which-key.nvim": { "branch": "main", "commit": "370ec46f710e058c9c1646273e6b225acf47cbed" }
 }

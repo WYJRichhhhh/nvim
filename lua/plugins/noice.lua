@@ -56,6 +56,7 @@ return {
                             { event = "notify" },
                             { error = true },
                             { warning = true },
+                            { info = true },
                             { event = "msg_show", kind = { "" } },
                             { event = "lsp", kind = "message" },
                         },
@@ -70,6 +71,7 @@ return {
                             { event = "notify" },
                             { error = true },
                             { warning = true },
+                            { info = true },
                             { event = "msg_show", kind = { "" } },
                             { event = "lsp", kind = "message" },
                         },
@@ -82,6 +84,13 @@ return {
                     view = "popup",
                     opts = { enter = true, format = "details" },
                     filter = { error = true },
+                    filter_opts = { reverse = true },
+                },
+                -- 添加新命令用于查看信息级别的消息
+                info = {
+                    view = "popup",
+                    opts = { enter = true, format = "details" },
+                    filter = { info = true },
                     filter_opts = { reverse = true },
                 },
             },
@@ -180,11 +189,43 @@ return {
                 lsp_doc_border = false, -- add a border to hover docs and signature help
             },
             throttle = 1000 / 30, -- how frequently does Noice need to check for ui updates? This has no effect when in blocking mode.
-            views = {},
+            views = {
+                -- 配置popup视图
+                popup = {
+                    -- 设置弹出窗口的选项
+                    win_options = {
+                        winhighlight = "Normal:NormalFloat,FloatBorder:FloatBorder",
+                    },
+                    -- 为popup视图添加按键映射
+                    mappings = {
+                        ["q"] = "Close", -- 添加q键关闭窗口
+                        ["<Esc>"] = "Close", -- 添加Esc键关闭窗口
+                    },
+                },
+                -- 配置messages视图
+                messages = {
+                    -- 设置messages视图的按键映射
+                    mappings = {
+                        ["q"] = "Close", -- 添加q键关闭窗口
+                        ["<Esc>"] = "Close", -- 添加Esc键关闭窗口
+                    },
+                },
+                -- 配置split视图
+                split = {
+                    -- 为split视图添加按键映射
+                    mappings = {
+                        ["q"] = "Close", -- 添加q键关闭窗口
+                        ["<Esc>"] = "Close", -- 添加Esc键关闭窗口
+                    },
+                },
+            },
             routes = {},
             status = {},
             format = {},
         })
+        
+        -- 添加快捷键查看info级别的消息
+        vim.keymap.set("n", "<leader>ni", "<cmd>Noice info<cr>", { desc = "查看信息级别的消息" })
     end,
     dependencies = {
         "MunifTanjim/nui.nvim",

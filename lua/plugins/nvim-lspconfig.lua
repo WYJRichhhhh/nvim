@@ -181,7 +181,7 @@ return {
         })
 
         -- Ruff LSP - 更快的Python linter和formatter
-        lspconfig.ruff_lsp.setup({
+        lspconfig.ruff.setup({
             capabilities = capabilities,
         })
 

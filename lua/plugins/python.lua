@@ -32,7 +32,7 @@ return {
           -- 重启所有Python相关的LSP
           local clients = vim.lsp.get_active_clients()
           for _, client in ipairs(clients) do
-            if client.name == "pyright" or client.name == "ruff_lsp" then
+            if client.name == "pyright" or client.name == "ruff" then
               -- 先停止LSP
               client.stop()
               -- 等待一小段时间确保完全停止
