@@ -60,6 +60,32 @@ return {
             },
         })
 
+        -- 设置LSP快捷键
+        vim.api.nvim_create_autocmd("LspAttach", {
+            group = vim.api.nvim_create_augroup("UserLspConfig", {}),
+            callback = function(ev)
+                -- 跳转到实现
+                vim.keymap.set("n", "gi", function()
+                    vim.lsp.buf.implementation()
+                end, { buffer = ev.buf, desc = "跳转到实现" })
+                
+                -- 跳转到定义
+                vim.keymap.set("n", "gd", function()
+                    vim.lsp.buf.definition()
+                end, { buffer = ev.buf, desc = "跳转到定义" })
+                
+                -- 跳转到类型定义
+                vim.keymap.set("n", "gt", function()
+                    vim.lsp.buf.type_definition()
+                end, { buffer = ev.buf, desc = "跳转到类型定义" })
+                
+                -- 跳转到引用
+                vim.keymap.set("n", "gr", function()
+                    vim.lsp.buf.references()
+                end, { buffer = ev.buf, desc = "跳转到引用" })
+            end,
+        })
+
         -- 无需配置的LSP服务器
         local no_config_servers = {
             "docker_compose_language_service",
@@ -131,18 +157,32 @@ return {
             end,
         })
 
+        -- Python
         lspconfig.pyright.setup({
             root_dir = require("lspconfig").util.root_pattern(".git", "pyrightconfig.json"),
             settings = {
                 python = {
                     analysis = {
                         typeCheckingMode = "basic",
-                        diagnosticMode = "workspace",
                         autoSearchPaths = true,
                         useLibraryCodeForTypes = true,
+                        diagnosticMode = "workspace",
+                        autoImportCompletions = true,
+                    },
+                    -- 设置Python路径
+                    pythonPath = os.getenv("VIRTUAL_ENV") and os.getenv("VIRTUAL_ENV") .. "/bin/python" or "/usr/bin/python3",
+                    -- 设置额外的Python路径
+                    extraPaths = {
+                        vim.fn.getcwd(),
+                        os.getenv("VIRTUAL_ENV") and os.getenv("VIRTUAL_ENV") .. "/lib/python*/site-packages" or "",
                     },
                 },
             },
+        })
+
+        -- Ruff LSP - 更快的Python linter和formatter
+        lspconfig.ruff_lsp.setup({
+            capabilities = capabilities,
         })
 
         -- Rust

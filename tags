@@ -1,0 +1,174 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+) dapui.open	lua/plugins/dapui-patch.lua	/^            pcall(function() dapui.open() end)$/;"	f
+) gs.next_hunk	lua/plugins/git-tools.lua	/^          vim.schedule(function() gs.next_hunk() end)$/;"	f
+) gs.prev_hunk	lua/plugins/git-tools.lua	/^          vim.schedule(function() gs.prev_hunk() end)$/;"	f
+) require	lua/core/keymaps.lua	/^                    pcall(function() require("dapui").open() end)$/;"	f
+) require	lua/core/keymaps.lua	/^      pcall(function() require("dapui").open() end)$/;"	f
+M.delete_buffer	lua/core/utils.lua	/^function M.delete_buffer(buf)$/;"	f
+M.diff_file	lua/core/utils.lua	/^function M.diff_file(file)$/;"	f
+M.diff_file_from_history	lua/core/utils.lua	/^function M.diff_file_from_history(commit, file_path)$/;"	f
+M.get_buffer_count	lua/core/utils.lua	/^function M.get_buffer_count()$/;"	f
+M.get_cmd_output	lua/core/utils.lua	/^function M.get_cmd_output(cmd, cwd)$/;"	f
+M.get_hlgroup	lua/core/utils.lua	/^function M.get_hlgroup(name, fallback)$/;"	f
+M.open_centered_float	lua/core/utils.lua	/^function M.open_centered_float(width, height, buf)$/;"	f
+M.open_help	lua/core/utils.lua	/^function M.open_help(buf)$/;"	f
+M.parse_hex	lua/core/utils.lua	/^function M.parse_hex(int_color)$/;"	f
+M.run_shell_script	lua/core/utils.lua	/^function M.run_shell_script()$/;"	f
+M.switch_to_other_buffer	lua/core/utils.lua	/^function M.switch_to_other_buffer()$/;"	f
+M.telescope_diff_file	lua/core/utils.lua	/^function M.telescope_diff_file(recent)$/;"	f
+M.telescope_diff_from_history	lua/core/utils.lua	/^function M.telescope_diff_from_history()$/;"	f
+M.write_to_file	lua/core/utils.lua	/^function M.write_to_file(file, lines)$/;"	f
+RevealInMiniFiles	lua/core/keymaps.lua	/^function RevealInMiniFiles()$/;"	f
+["<S-Tab>"] 	lua/plugins/nvim-cmp.lua	/^                ["<S-Tab>"] = cmp.mapping(function(fallback)$/;"	f
+["<S-Tab>"] 	lua/plugins/python-completion.lua	/^          ["<S-Tab>"] = cmp.mapping(function(fallback)$/;"	f
+["<Tab>"] 	lua/plugins/nvim-cmp.lua	/^                ["<Tab>"] = cmp.mapping(function(fallback)$/;"	f
+["<Tab>"] 	lua/plugins/python-completion.lua	/^          ["<Tab>"] = cmp.mapping(function(fallback)$/;"	f
+activate_venv 	lua/plugins/python.lua	/^        activate_venv = function(path)$/;"	f
+attach_mappings 	lua/core/utils.lua	/^        attach_mappings = function(prompt_bufnr)$/;"	f
+augroup	lua/plugins/minifiles.lua	/^        local function augroup(name)$/;"	f
+before 	lua/plugins/nvim-cmp.lua	/^                    before = function(entry, vim_item)$/;"	f
+callback 	lua/core/autocmds.lua	/^    callback = function()$/;"	f
+callback 	lua/core/autocmds.lua	/^    callback = function(data)$/;"	f
+callback 	lua/core/autocmds.lua	/^    callback = function(event)$/;"	f
+callback 	lua/core/autocmds.lua	/^    callback = function(opts)$/;"	f
+callback 	lua/disable_plugins/copilot-chat.lua	/^      callback = function()$/;"	f
+callback 	lua/plugins/black.lua	/^      callback = function()$/;"	f
+callback 	lua/plugins/minifiles.lua	/^            callback = function()$/;"	f
+callback 	lua/plugins/minifiles.lua	/^            callback = function(sii)$/;"	f
+callback 	lua/plugins/nvim-lint.lua	/^      callback = function()$/;"	f
+callback 	lua/plugins/nvim-lspconfig.lua	/^            callback = function(ev)$/;"	f
+callback 	lua/plugins/nvterm.lua	/^            callback = function()$/;"	f
+callback 	lua/plugins/resession.lua	/^            callback = function()$/;"	f
+clearCache	lua/plugins/minifiles.lua	/^        local function clearCache()$/;"	f
+color 	lua/plugins/lualine-nvim.lua	/^                        color = function()$/;"	f
+cond 	lua/plugins/lualine-nvim.lua	/^                        cond = function()$/;"	f
+cond 	lua/plugins/telescope-nvim.lua	/^            cond = function()$/;"	f
+config 	lua/disable_plugins/blinkcmp.lua	/^    config = function()$/;"	f
+config 	lua/disable_plugins/colorscheme.lua	/^    config = function(_, opts)$/;"	f
+config 	lua/disable_plugins/copilot-chat.lua	/^  config = function()$/;"	f
+config 	lua/disable_plugins/copilot.lua	/^    config = function()$/;"	f
+config 	lua/disable_plugins/neotest.lua	/^  config = function()$/;"	f
+config 	lua/disable_plugins/nvim-tree.lua	/^  config = function(_, opts)$/;"	f
+config 	lua/disable_plugins/rest.lua	/^    config = function()$/;"	f
+config 	lua/plugins/bigfile-nvim.lua	/^  config = function (_, opts)$/;"	f
+config 	lua/plugins/black.lua	/^  config =function ()$/;"	f
+config 	lua/plugins/conform.lua	/^  config = function()$/;"	f
+config 	lua/plugins/cyberdream.lua	/^        config = function()$/;"	f
+config 	lua/plugins/dapui-patch.lua	/^  config = function()$/;"	f
+config 	lua/plugins/dashboard.lua	/^    config = function()$/;"	f
+config 	lua/plugins/go.lua	/^  config = function()$/;"	f
+config 	lua/plugins/grug-far.lua	/^  config = function()$/;"	f
+config 	lua/plugins/gutentags.lua	/^    config = function()$/;"	f
+config 	lua/plugins/mason.lua	/^  config = function()$/;"	f
+config 	lua/plugins/minifiles.lua	/^    config = function()$/;"	f
+config 	lua/plugins/miniicons.lua	/^    config = function()$/;"	f
+config 	lua/plugins/neocord.lua	/^    config = function()$/;"	f
+config 	lua/plugins/noice.lua	/^    config = function()$/;"	f
+config 	lua/plugins/notify.lua	/^    config = function()$/;"	f
+config 	lua/plugins/nvim-cmp.lua	/^    config = function()$/;"	f
+config 	lua/plugins/nvim-dap-python.lua	/^  config = function ()$/;"	f
+config 	lua/plugins/nvim-dap-ui.lua	/^  config = function (_, opts)$/;"	f
+config 	lua/plugins/nvim-highlight-colors.lua	/^    config = function()$/;"	f
+config 	lua/plugins/nvim-lint.lua	/^  config = function ()$/;"	f
+config 	lua/plugins/nvim-lspconfig.lua	/^    config = function(_, opts)$/;"	f
+config 	lua/plugins/nvim-navic.lua	/^    config = function()$/;"	f
+config 	lua/plugins/nvim-treesitter.lua	/^    config = function(_, opts)$/;"	f
+config 	lua/plugins/nvterm.lua	/^    config = function()$/;"	f
+config 	lua/plugins/python-completion.lua	/^    config = function()$/;"	f
+config 	lua/plugins/python-tools.lua	/^    config = function()$/;"	f
+config 	lua/plugins/python.lua	/^    config = function()$/;"	f
+config 	lua/plugins/render-markdown.lua	/^    config = function()$/;"	f
+config 	lua/plugins/resession.lua	/^    config = function()$/;"	f
+config 	lua/plugins/ts-auto-tag.lua	/^  config = function()$/;"	f
+config 	lua/plugins/vim-commentary.lua	/^    config = function()$/;"	f
+config 	lua/plugins/vim-rest-console.lua	/^    config = function()$/;"	f
+config 	lua/plugins/which-key.lua	/^    config = function()$/;"	f
+create_venv 	lua/plugins/python.lua	/^        create_venv = function(path)$/;"	f
+dap.listeners.after.event_initialized["dapui_config"] 	lua/plugins/nvim-dap-ui.lua	/^    dap.listeners.after.event_initialized["dapui_config"] = function()$/;"	f
+dap.listeners.before.event_exited["dapui_config"] 	lua/plugins/nvim-dap-ui.lua	/^    dap.listeners.before.event_exited["dapui_config"] = function()$/;"	f
+dap.listeners.before.event_terminated["dapui_config"] 	lua/plugins/nvim-dap-ui.lua	/^    dap.listeners.before.event_terminated["dapui_config"] = function()$/;"	f
+dapui.toggle 	lua/plugins/dapui-patch.lua	/^    dapui.toggle = function(...)$/;"	f
+display_callback 	lua/plugins/nvim-dap-virtual-text.lua	/^    display_callback = function(variable, buf, stackframe, node, options)$/;"	f
+display_callback 	lua/plugins/python.lua	/^        display_callback = function(variable, _buf, _stackframe, _node)$/;"	f
+editing_text 	lua/plugins/neocord.lua	/^            editing_text = function(_)$/;"	f
+ensure_installed	lua/plugins/mason.lua	/^    local function ensure_installed()$/;"	f
+escapePattern	lua/plugins/minifiles.lua	/^        local function escapePattern(str)$/;"	f
+event 	lua/plugins/vim-tmux-navigator.lua	/^  event = function()$/;"	f
+expand 	lua/plugins/nvim-cmp.lua	/^                expand = function(args)$/;"	f
+expand 	lua/plugins/python-completion.lua	/^          expand = function(args)$/;"	f
+fetchGitStatus	lua/plugins/minifiles.lua	/^        local function fetchGitStatus(cwd, callback)$/;"	f
+fmt 	lua/plugins/lualine-nvim.lua	/^                        fmt = function(mode)$/;"	f
+fmt 	lua/plugins/lualine-nvim.lua	/^                        fmt = function(name)$/;"	f
+format_after_save 	lua/plugins/conform.lua	/^      format_after_save = function()$/;"	f
+get_activate_cmd	lua/plugins/nvterm.lua	/^        local function get_activate_cmd()$/;"	f
+get_python_path	lua/plugins/python.lua	/^      local function get_python_path()$/;"	f
+get_venv_path	lua/plugins/nvterm.lua	/^        local function get_venv_path()$/;"	f
+is_valid_git_repo	lua/plugins/minifiles.lua	/^        local function is_valid_git_repo()$/;"	f
+keymap.set("n", "<leader>bb", function() require("dap").toggle_breakpoint() end, { desc 	lua/core/keymaps.lua	/^keymap.set("n", "<leader>bb", function() require("dap").toggle_breakpoint() end, { desc = "调试: 切换断点" })$/;"	f
+keymap.set("n", "<leader>bx", function() utils.delete_buffer() end, { desc 	lua/core/keymaps.lua	/^keymap.set("n", "<leader>bx", function() utils.delete_buffer() end, { desc = "删除缓冲区" })$/;"	f
+keymap.set("n", "<leader>d?", function() require("dap.ui.widgets").preview() end, { desc 	lua/core/keymaps.lua	/^keymap.set("n", "<leader>d?", function() require("dap.ui.widgets").preview() end, { desc = "调试: 预览" })$/;"	f
+keymap.set("n", "<leader>dS", function() require("telescope").extensions.dap.frames() end, { desc 	lua/core/keymaps.lua	/^keymap.set("n", "<leader>dS", function() require("telescope").extensions.dap.frames() end, { desc = "调试: 显示帧" })$/;"	f
+keymap.set("n", "<leader>dS", function() require("telescope").extensions.dap.variables() end, { desc 	lua/core/keymaps.lua	/^keymap.set("n", "<leader>dS", function() require("telescope").extensions.dap.variables() end, { desc = "调试: 显示变量" })$/;"	f
+keymap.set("n", "<leader>dc", function() require("dap").continue() end, { desc 	lua/core/keymaps.lua	/^keymap.set("n", "<leader>dc", function() require("dap").continue() end, { desc = "调试: 继续" })$/;"	f
+keymap.set("n", "<leader>dc", function() require("dap.ui.widgets").centered_float(require("dap.ui.widgets").scopes) end, { desc 	lua/core/keymaps.lua	/^keymap.set("n", "<leader>dc", function() require("dap.ui.widgets").centered_float(require("dap.ui.widgets").scopes) end, { desc = "调试: 显示作用域" })$/;"	f
+keymap.set("n", "<leader>dh", function() require("dap.ui.widgets").hover() end, { desc 	lua/core/keymaps.lua	/^keymap.set("n", "<leader>dh", function() require("dap.ui.widgets").hover() end, { desc = "调试: 悬停显示" })$/;"	f
+keymap.set("n", "<leader>di", function() require("dap").step_into() end, { desc 	lua/core/keymaps.lua	/^keymap.set("n", "<leader>di", function() require("dap").step_into() end, { desc = "调试: 单步进入" })$/;"	f
+keymap.set("n", "<leader>di", function() require("telescope").extensions.dap.list_breakpoints() end, { desc 	lua/core/keymaps.lua	/^keymap.set("n", "<leader>di", function() require("telescope").extensions.dap.list_breakpoints() end, { desc = "调试: 列出断点" })$/;"	f
+keymap.set("n", "<leader>do", function() require("dap").step_over() end, { desc 	lua/core/keymaps.lua	/^keymap.set("n", "<leader>do", function() require("dap").step_over() end, { desc = "调试: 单步跳过" })$/;"	f
+keymap.set("n", "<leader>dr", function() require("dap").repl.open() end, { desc 	lua/core/keymaps.lua	/^keymap.set("n", "<leader>dr", function() require("dap").repl.open() end, { desc = "调试: 打开REPL" })$/;"	f
+keymap.set("n", "<leader>dx", function() require("dap").terminate() end, { desc 	lua/core/keymaps.lua	/^keymap.set("n", "<leader>dx", function() require("dap").terminate() end, { desc = "调试: 终止" })$/;"	f
+keymap.set("n", "<leader>eb", function() require("dap").set_breakpoint(vim.fn.input("Breakpoint condition: ")) end, { desc 	lua/core/keymaps.lua	/^keymap.set("n", "<leader>eb", function() require("dap").set_breakpoint(vim.fn.input("Breakpoint condition: ")) end, { desc = "调试: 编辑断点" })$/;"	f
+keymap.set("n", "<leader>fr", function() require("dap").run_last() end, { desc 	lua/core/keymaps.lua	/^keymap.set("n", "<leader>fr", function() require("dap").run_last() end, { desc = "调试: 强制返回" })$/;"	f
+keymap.set("n", "<leader>mv", function() vim.lsp.buf.code_action({ context 	lua/core/keymaps.lua	/^keymap.set("n", "<leader>mv", function() vim.lsp.buf.code_action({ context = { only = { "refactor.move" } } }) end, { desc = "重构: 移动" })$/;"	f
+keymap.set("n", "<leader>raB", function() require("dap").clear_breakpoints() end, { desc 	lua/core/keymaps.lua	/^keymap.set("n", "<leader>raB", function() require("dap").clear_breakpoints() end, { desc = "调试: 清除所有断点" })$/;"	f
+keymap.set("n", "<leader>re", function() vim.lsp.buf.rename() end, { desc 	lua/core/keymaps.lua	/^keymap.set("n", "<leader>re", function() vim.lsp.buf.rename() end, { desc = "重构: 重命名" })$/;"	f
+keymap.set("n", "<leader>ri", function() require("refactoring").refactor("Inline Variable") end, { desc 	lua/core/keymaps.lua	/^keymap.set("n", "<leader>ri", function() require("refactoring").refactor("Inline Variable") end, { desc = "重构: 内联变量" })$/;"	f
+keymap.set("v", "<leader>em", function() require("refactoring").refactor("Extract Function") end, { desc 	lua/core/keymaps.lua	/^keymap.set("v", "<leader>em", function() require("refactoring").refactor("Extract Function") end, { desc = "重构: 提取方法" })$/;"	f
+keymap.set("v", "<leader>ev", function() require("refactoring").refactor("Extract Variable") end, { desc 	lua/core/keymaps.lua	/^keymap.set("v", "<leader>ev", function() require("refactoring").refactor("Extract Variable") end, { desc = "重构: 提取变量" })$/;"	f
+list_models 	lua/disable_plugins/gen.lua	/^        list_models = '<omitted lua function>', -- Retrieves a list of model names$/;"	f
+local ok, _ 	lua/core/utils.lua	/^    local ok, _ = pcall(function()$/;"	f
+local status, err 	lua/core/keymaps.lua	/^    local status, err = pcall(function()$/;"	f
+local status, err 	lua/core/keymaps.lua	/^  local status, err = pcall(function()$/;"	f
+local status, err 	lua/plugins/nvim-dap-ui.lua	/^      local status, err = pcall(function()$/;"	f
+local ui_status, ui_err 	lua/core/keymaps.lua	/^            local ui_status, ui_err = pcall(function()$/;"	f
+map	lua/plugins/git-tools.lua	/^        local function map(mode, l, r, opts)$/;"	f
+map	lua/plugins/gitsigns.lua	/^      local function map(l, r, desc)$/;"	f
+map("n", "<leader>gD", function() gs.diffthis("~") end, { desc 	lua/plugins/git-tools.lua	/^        map("n", "<leader>gD", function() gs.diffthis("~") end, { desc = "与HEAD比较差异" })$/;"	f
+map("n", "<leader>gb", function() gs.blame_line{full	lua/plugins/git-tools.lua	/^        map("n", "<leader>gb", function() gs.blame_line{full=true} end, { desc = "查看行归属信息" })$/;"	f
+map("v", "<leader>gr", function() gs.reset_hunk {vim.fn.line("."), vim.fn.line("v")} end, { desc 	lua/plugins/git-tools.lua	/^        map("v", "<leader>gr", function() gs.reset_hunk {vim.fn.line("."), vim.fn.line("v")} end, { desc = "重置选中区域" })$/;"	f
+map("v", "<leader>gs", function() gs.stage_hunk {vim.fn.line("."), vim.fn.line("v")} end, { desc 	lua/plugins/git-tools.lua	/^        map("v", "<leader>gs", function() gs.stage_hunk {vim.fn.line("."), vim.fn.line("v")} end, { desc = "暂存选中区域" })$/;"	f
+mapSymbols	lua/plugins/minifiles.lua	/^        local function mapSymbols(status)$/;"	f
+nnoremap	ftplugin/java.lua	/^local function nnoremap(rhs, lhs, bufopts, desc)$/;"	f
+on_attach 	ftplugin/java.lua	/^    on_attach = function(client, bufnr)$/;"	f
+on_attach 	lua/plugins/git-tools.lua	/^      on_attach = function(bufnr)$/;"	f
+on_attach 	lua/plugins/gitsigns.lua	/^    on_attach = function(buffer)$/;"	f
+on_close 	lua/plugins/notify.lua	/^            on_close = function() end,$/;"	f
+on_exit	lua/plugins/minifiles.lua	/^            local function on_exit(content)$/;"	f
+on_init 	lua/plugins/nvim-lspconfig.lua	/^            on_init = function(client)$/;"	f
+on_open 	lua/plugins/notify.lua	/^            on_open = function() end,$/;"	f
+on_open 	lua/plugins/nvterm.lua	/^                on_open = function()$/;"	f
+on_stderr 	lua/core/utils.lua	/^            on_stderr = function(_, data)$/;"	f
+opts 	lua/plugins/lualine-nvim.lua	/^    opts = function()$/;"	f
+original_windows_layout.WindowLayout.open 	lua/plugins/dapui-patch.lua	/^      original_windows_layout.WindowLayout.open = function(self)$/;"	f
+parseGitStatus	lua/plugins/minifiles.lua	/^        local function parseGitStatus(content)$/;"	f
+post_set_venv 	lua/plugins/python.lua	/^        post_set_venv = function()$/;"	f
+search_dir 	lua/plugins/python.lua	/^        search_dir = function()$/;"	f
+selection 	lua/disable_plugins/copilot-chat.lua	/^      selection = function(source)$/;"	f
+setup_dap_window_titles	lua/plugins/nvim-dap-ui.lua	/^    local function setup_dap_window_titles()$/;"	f
+updateGitStatus	lua/plugins/minifiles.lua	/^        local function updateGitStatus(buf_id)$/;"	f
+updateMiniWithGit	lua/plugins/minifiles.lua	/^        local function updateMiniWithGit(buf_id, gitStatusMap)$/;"	f
+vim.keymap.set("n", "<leader>dB", function() require("dap").set_breakpoint(vim.fn.input("Breakpoint condition: ")) end, { desc 	lua/plugins/python.lua	/^      vim.keymap.set("n", "<leader>dB", function() require("dap").set_breakpoint(vim.fn.input("Breakpoint condition: ")) end, { desc = "调试: 设置条件断点" })$/;"	f
+vim.keymap.set("n", "<leader>db", function() require("dap").toggle_breakpoint() end, { desc 	lua/plugins/python.lua	/^      vim.keymap.set("n", "<leader>db", function() require("dap").toggle_breakpoint() end, { desc = "调试: 切换断点" })$/;"	f
+vim.keymap.set("n", "<leader>dc", function() require("dap").continue() end, { desc 	lua/plugins/python.lua	/^      vim.keymap.set("n", "<leader>dc", function() require("dap").continue() end, { desc = "调试: 继续" })$/;"	f
+vim.keymap.set("n", "<leader>di", function() require("dap").step_into() end, { desc 	lua/plugins/python.lua	/^      vim.keymap.set("n", "<leader>di", function() require("dap").step_into() end, { desc = "调试: 单步进入" })$/;"	f
+vim.keymap.set("n", "<leader>dl", function() require("dap").run_last() end, { desc 	lua/plugins/python.lua	/^      vim.keymap.set("n", "<leader>dl", function() require("dap").run_last() end, { desc = "调试: 运行上次" })$/;"	f
+vim.keymap.set("n", "<leader>do", function() require("dap").step_over() end, { desc 	lua/plugins/python.lua	/^      vim.keymap.set("n", "<leader>do", function() require("dap").step_over() end, { desc = "调试: 单步跳过" })$/;"	f
+vim.keymap.set("n", "<leader>dr", function() require("dap").repl.open() end, { desc 	lua/plugins/python.lua	/^      vim.keymap.set("n", "<leader>dr", function() require("dap").repl.open() end, { desc = "调试: 打开REPL" })$/;"	f
+vim.keymap.set("n", "<leader>du", function() require("dapui").toggle() end, { desc 	lua/plugins/python.lua	/^      vim.keymap.set("n", "<leader>du", function() require("dapui").toggle() end, { desc = "调试: 切换UI" })$/;"	f
+vim.lsp.util.open_floating_preview	lua/plugins/nvim-lspconfig.lua	/^        function vim.lsp.util.open_floating_preview(contents, syntax, opts, ...)$/;"	f
+workspace_text 	lua/plugins/neocord.lua	/^            workspace_text = function(project_name)$/;"	f

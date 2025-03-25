@@ -1,89 +1,13 @@
 -- Python开发环境配置
 return {
   {
-    -- Python LSP服务器 - 更强大的Python类型检查和自动补全
-    "neovim/nvim-lspconfig",
-    event = { "BufReadPre", "BufNewFile" },
-    ft = { "python" },
-    opts = {
-      servers = {
-        pyright = {
-          settings = {
-            python = {
-              analysis = {
-                typeCheckingMode = "basic", -- 可设置为 "off", "basic", "strict"
-                autoSearchPaths = true,
-                useLibraryCodeForTypes = true,
-                diagnosticMode = "workspace",
-                -- 自动导入功能
-                autoImportCompletions = true,
-              },
-              -- 设置Python路径
-              pythonPath = function()
-                local venv = os.getenv("VIRTUAL_ENV")
-                if venv then
-                  return venv .. "/bin/python"
-                end
-                return "/usr/bin/python3"
-              end,
-              -- 设置额外的Python路径
-              extraPaths = function()
-                local paths = {}
-                -- 添加项目根目录
-                table.insert(paths, vim.fn.getcwd())
-                -- 添加虚拟环境site-packages
-                local venv = os.getenv("VIRTUAL_ENV")
-                if venv then
-                  table.insert(paths, venv .. "/lib/python*/site-packages")
-                end
-                return paths
-              end,
-            },
-          },
-        },
-      },
-    },
-  },
-  {
-    -- Ruff LSP - 更快的Python linter和formatter
-    "mfussenegger/nvim-lint",
-    event = { "BufReadPre", "BufNewFile" },
-    ft = { "python" },
-    config = function()
-      local lint = require("lint")
-      lint.linters_by_ft = {
-        python = { "ruff" },
-      }
-      -- 保存时自动lint
-      vim.api.nvim_create_autocmd({ "BufWritePost" }, {
-        callback = function()
-          require("lint").try_lint()
-        end,
-      })
-    end,
-  },
-  {
-    -- Python代码格式化工具
-    "stevearc/conform.nvim",
-    event = { "BufWritePre" },
-    ft = { "python" },
-    opts = {
-      formatters_by_ft = {
-        python = { "black", "isort" },
-      },
-      format_on_save = {
-        timeout_ms = 500,
-        lsp_fallback = true,
-      },
-    },
-  },
-  {
     -- Python环境管理
     "linux-cultist/venv-selector.nvim",
     ft = "python",
     dependencies = { 
       "neovim/nvim-lspconfig", 
-      "nvim-telescope/telescope.nvim" 
+      "nvim-telescope/telescope.nvim",
+      "NvChad/nvterm"  -- 添加 nvterm 依赖
     },
     config = function()
       require("venv-selector").setup({
@@ -103,9 +27,44 @@ return {
         auto_refresh_on_write = true,
         -- 在状态栏显示当前环境
         status_line = true,
-        -- 在切换环境时自动重启LSP
+        -- 在切换环境时自动重启LSP和更新终端
         post_set_venv = function()
-          vim.cmd("LspRestart")
+          -- 重启所有Python相关的LSP
+          local clients = vim.lsp.get_active_clients()
+          for _, client in ipairs(clients) do
+            if client.name == "pyright" or client.name == "ruff_lsp" then
+              -- 先停止LSP
+              client.stop()
+              -- 等待一小段时间确保完全停止
+              vim.defer_fn(function()
+                -- 重新启动LSP
+                vim.cmd("LspStart " .. client.name)
+              end, 100)
+            end
+          end
+
+          -- 更新所有打开的终端
+          local venv = os.getenv("VIRTUAL_ENV")
+          if venv then
+            local activate_cmd = vim.fn.has("win32") == 1 
+              and venv .. "/Scripts/activate"
+              or "source " .. venv .. "/bin/activate"
+            
+            -- 获取项目根目录
+            local project_root = vim.fn.getcwd()
+            
+            -- 获取所有终端窗口
+            local terminals = require("nvterm").get_all()
+            for _, term in ipairs(terminals) do
+              -- 发送激活命令到终端
+              vim.api.nvim_chan_send(term, activate_cmd .. "\n")
+              -- 设置 PYTHONPATH
+              vim.api.nvim_chan_send(term, string.format("export PYTHONPATH=%s:$PYTHONPATH\n", project_root))
+            end
+
+            -- 触发环境变化事件
+            vim.api.nvim_exec_autocmds("User", { pattern = "VenvSelectorVenvChanged" })
+          end
         end,
         -- 搜索路径配置
         search_paths = {
@@ -136,15 +95,18 @@ return {
     end,
   },
   {
-    -- Python补全增强
-    "hrsh7th/nvim-cmp",
-    event = "InsertEnter",
-    dependencies = {
-      "hrsh7th/cmp-nvim-lsp",
-      "hrsh7th/cmp-buffer",
-      "hrsh7th/cmp-path",
-      -- Python docstring补全
-      "hrsh7th/cmp-nvim-lsp-signature-help",
+    -- Python代码格式化工具
+    "stevearc/conform.nvim",
+    event = { "BufWritePre" },
+    ft = { "python" },
+    opts = {
+      formatters_by_ft = {
+        python = { "black", "isort" },
+      },
+      format_on_save = {
+        timeout_ms = 500,
+        lsp_fallback = true,
+      },
     },
   },
   {
@@ -248,106 +210,6 @@ return {
       vim.keymap.set("n", "<leader>dr", function() require("dap").repl.open() end, { desc = "调试: 打开REPL" })
       vim.keymap.set("n", "<leader>dl", function() require("dap").run_last() end, { desc = "调试: 运行上次" })
       vim.keymap.set("n", "<leader>du", function() require("dapui").toggle() end, { desc = "调试: 切换UI" })
-      vim.keymap.set("n", "<leader>dx", function() require("dap").terminate() end, { desc = "调试: 终止" })
-      vim.keymap.set("n", "<leader>dC", function() require("dap").clear_breakpoints() end, { desc = "调试: 清除所有断点" })
-      vim.keymap.set("n", "<leader>de", function() require("dap").eval() end, { desc = "调试: 评估表达式" })
-      vim.keymap.set("n", "<leader>dE", function() require("dap").eval(vim.fn.input("Expression: ")) end, { desc = "调试: 评估输入表达式" })
-      vim.keymap.set("n", "<leader>df", function() require("telescope").extensions.dap.frames() end, { desc = "调试: 显示帧" })
-      vim.keymap.set("n", "<leader>di", function() require("telescope").extensions.dap.list_breakpoints() end, { desc = "调试: 列出断点" })
-      vim.keymap.set("n", "<leader>dS", function() require("telescope").extensions.dap.variables() end, { desc = "调试: 显示变量" })
-      vim.keymap.set("n", "<leader>dh", function() require("dap.ui.widgets").hover() end, { desc = "调试: 悬停显示" })
-      vim.keymap.set("n", "<leader>d?", function() require("dap.ui.widgets").preview() end, { desc = "调试: 预览" })
-      vim.keymap.set("n", "<leader>dc", function() require("dap.ui.widgets").centered_float(require("dap.ui.widgets").scopes) end, { desc = "调试: 显示作用域" })
     end,
-  },
-  {
-    -- 提供Python语法高亮和缩进
-    "nvim-treesitter/nvim-treesitter",
-    ft = { "python" },
-    opts = {
-      ensure_installed = { "python" },
-      highlight = {
-        enable = true,
-      },
-      indent = {
-        enable = true,
-      },
-    },
-  },
-  {
-    -- Python测试框架支持
-    "nvim-neotest/neotest",
-    ft = "python",
-    dependencies = {
-      "nvim-lua/plenary.nvim",
-      "nvim-treesitter/nvim-treesitter",
-      "nvim-neotest/neotest-python",
-    },
-    config = function()
-      require("neotest").setup({
-        adapters = {
-          require("neotest-python")({
-            dap = { justMyCode = false },
-            -- 自动检测pytest运行器
-            runner = "pytest",
-            -- 支持测试发现
-            pytest_discovery = true,
-          }),
-        },
-      })
-      
-      -- 设置测试快捷键
-      vim.keymap.set("n", "<leader>tt", function() require("neotest").run.run() end, { desc = "测试: 运行最近的测试" })
-      vim.keymap.set("n", "<leader>tf", function() require("neotest").run.run(vim.fn.expand("%")) end, { desc = "测试: 运行当前文件" })
-      vim.keymap.set("n", "<leader>ts", function() require("neotest").summary.toggle() end, { desc = "测试: 切换摘要" })
-    end,
-  },
-  {
-    -- Python代码导航和信息显示
-    "SmiteshP/nvim-navic",
-    event = "LspAttach",
-    dependencies = {
-      "neovim/nvim-lspconfig",
-    },
-    config = function()
-      require("nvim-navic").setup({
-        highlight = true,
-        lsp = {
-          auto_attach = true,
-        },
-      })
-    end,
-  },
-  {
-    -- 提供智能重命名和导入排序
-    "ThePrimeagen/refactoring.nvim",
-    ft = { "python" },
-    dependencies = {
-      "nvim-lua/plenary.nvim",
-      "nvim-treesitter/nvim-treesitter",
-    },
-    config = function()
-      require("refactoring").setup({})
-      -- 设置重构快捷键
-      vim.keymap.set("v", "<leader>re", function() require("refactoring").refactor("Extract Function") end, { desc = "重构: 提取函数" })
-      vim.keymap.set("v", "<leader>rv", function() require("refactoring").refactor("Extract Variable") end, { desc = "重构: 提取变量" })
-      vim.keymap.set("n", "<leader>ri", function() require("refactoring").refactor("Inline Variable") end, { desc = "重构: 内联变量" })
-    end,
-  },
-  {
-    -- 显示代码文档和函数签名
-    "ray-x/lsp_signature.nvim",
-    event = "LspAttach",
-    config = function()
-      require("lsp_signature").setup({
-        bind = true,
-        handler_opts = {
-          border = "rounded",
-        },
-        hint_enable = true,  -- 显示参数名提示
-        hint_prefix = "📝 ",
-        doc_lines = 10,      -- 文档显示行数
-      })
-    end,
-  },
+  }
 } 

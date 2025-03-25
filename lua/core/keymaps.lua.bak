@@ -163,22 +163,27 @@ keymap.set("n", "<leader>dr", function()
 end, { desc = "调试: 打开REPL" })
 keymap.set("n", "<leader>dx", function()
     require("dap").terminate()
+    if package.loaded["dapui"] then
+        require("dapui").close()
+    end
 end, { desc = "调试: 终止" })
 keymap.set("n", "<leader>raB", function()
     require("dap").clear_breakpoints()
 end, { desc = "调试: 清除所有断点" })
 keymap.set("n", "<leader>pp", function() 
-  local status, err = pcall(function()
-    require("dapui").toggle()
-  end)
-  if not status then
-    vim.notify("无法切换调试界面: " .. tostring(err), vim.log.levels.WARN)
-    -- 尝试重新打开 UI
-    vim.defer_fn(function()
-      pcall(function() require("dapui").open() end)
-    end, 100)
+  -- 尝试使用全局安全函数
+  if _G.safe_dapui and _G.safe_dapui.safe_toggle then
+    _G.safe_dapui.safe_toggle()
+  else
+    -- 回退到基本的错误处理逻辑
+    local status, err = pcall(function()
+      require("dapui").toggle()
+    end)
+    if not status then
+      vim.notify("无法切换调试UI: " .. tostring(err), vim.log.levels.ERROR)
+    end
   end
-end, { desc = "调试: 显示执行点" })
+end, { desc = "调试: 显示/隐藏调试界面" })
 keymap.set("n", "<leader>fr", function()
     require("dap").run_last()
 end, { desc = "调试: 强制返回" })
@@ -287,22 +292,6 @@ keymap.set("n", "<leader>dd", function()
         
         -- 启动调试
         require("dap").run(config)
-        
-        -- 确保 UI 打开
-        vim.defer_fn(function()
-            local ui_status, ui_err = pcall(function()
-                if package.loaded["dapui"] then
-                    require("dapui").open()
-                end
-            end)
-            if not ui_status then
-                vim.notify("DAP UI 打开失败: " .. tostring(ui_err), vim.log.levels.WARN)
-                -- 尝试再次打开
-                vim.defer_fn(function()
-                    pcall(function() require("dapui").open() end)
-                end, 200)
-            end
-        end, 100)
     end)
     
     if not status then
@@ -409,17 +398,19 @@ keymap.set("n", "<leader>dr", function() require("dap").repl.open() end, { desc 
 keymap.set("n", "<leader>dx", function() require("dap").terminate() end, { desc = "调试: 终止" })
 keymap.set("n", "<leader>raB", function() require("dap").clear_breakpoints() end, { desc = "调试: 清除所有断点" })
 keymap.set("n", "<leader>pp", function() 
-  local status, err = pcall(function()
-    require("dapui").toggle()
-  end)
-  if not status then
-    vim.notify("无法切换调试界面: " .. tostring(err), vim.log.levels.WARN)
-    -- 尝试重新打开 UI
-    vim.defer_fn(function()
-      pcall(function() require("dapui").open() end)
-    end, 100)
+  -- 尝试使用全局安全函数
+  if _G.safe_dapui and _G.safe_dapui.safe_toggle then
+    _G.safe_dapui.safe_toggle()
+  else
+    -- 回退到基本的错误处理逻辑
+    local status, err = pcall(function()
+      require("dapui").toggle()
+    end)
+    if not status then
+      vim.notify("无法切换调试UI: " .. tostring(err), vim.log.levels.ERROR)
+    end
   end
-end, { desc = "调试: 显示执行点" })
+end, { desc = "调试: 显示/隐藏调试界面" })
 keymap.set("n", "<leader>fr", function() require("dap").run_last() end, { desc = "调试: 强制返回" })
 keymap.set("n", "<leader>dS", function() require("telescope").extensions.dap.frames() end, { desc = "调试: 显示帧" })
 keymap.set("n", "<leader>di", function() require("telescope").extensions.dap.list_breakpoints() end, { desc = "调试: 列出断点" })
