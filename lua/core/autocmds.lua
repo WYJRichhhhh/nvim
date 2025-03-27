@@ -81,6 +81,7 @@ autocmd("FileType", {
         "copilot-chat",
         "dap-float",
         "qf",
+        "diff",
     },
     callback = function(event)
         vim.bo[event.buf].buflisted = false

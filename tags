@@ -53,6 +53,8 @@ config 	lua/disable_plugins/colorscheme.lua	/^    config = function(_, opts)$/;"
 config 	lua/disable_plugins/copilot-chat.lua	/^  config = function()$/;"	f
 config 	lua/disable_plugins/copilot.lua	/^    config = function()$/;"	f
 config 	lua/disable_plugins/neotest.lua	/^  config = function()$/;"	f
+config 	lua/disable_plugins/nvim-dap-python.lua	/^  config = function ()$/;"	f
+config 	lua/disable_plugins/nvim-dap-ui.lua	/^  config = function (_, opts)$/;"	f
 config 	lua/disable_plugins/nvim-tree.lua	/^  config = function(_, opts)$/;"	f
 config 	lua/disable_plugins/rest.lua	/^    config = function()$/;"	f
 config 	lua/plugins/bigfile-nvim.lua	/^  config = function (_, opts)$/;"	f
@@ -71,8 +73,6 @@ config 	lua/plugins/neocord.lua	/^    config = function()$/;"	f
 config 	lua/plugins/noice.lua	/^    config = function()$/;"	f
 config 	lua/plugins/notify.lua	/^    config = function()$/;"	f
 config 	lua/plugins/nvim-cmp.lua	/^    config = function()$/;"	f
-config 	lua/plugins/nvim-dap-python.lua	/^  config = function ()$/;"	f
-config 	lua/plugins/nvim-dap-ui.lua	/^  config = function (_, opts)$/;"	f
 config 	lua/plugins/nvim-highlight-colors.lua	/^    config = function()$/;"	f
 config 	lua/plugins/nvim-lint.lua	/^  config = function ()$/;"	f
 config 	lua/plugins/nvim-lspconfig.lua	/^    config = function(_, opts)$/;"	f
@@ -84,20 +84,21 @@ config 	lua/plugins/python-tools.lua	/^    config = function()$/;"	f
 config 	lua/plugins/python.lua	/^        config = function()$/;"	f
 config 	lua/plugins/render-markdown.lua	/^    config = function()$/;"	f
 config 	lua/plugins/resession.lua	/^    config = function()$/;"	f
+config 	lua/plugins/telescope-nvim.lua	/^    config = function()$/;"	f
 config 	lua/plugins/ts-auto-tag.lua	/^  config = function()$/;"	f
 config 	lua/plugins/vim-commentary.lua	/^    config = function()$/;"	f
 config 	lua/plugins/vim-rest-console.lua	/^    config = function()$/;"	f
 config 	lua/plugins/which-key.lua	/^    config = function()$/;"	f
 create_venv 	lua/plugins/python.lua	/^                create_venv = function(path)$/;"	f
-dap.listeners.after.event_initialized["dapui_config"] 	lua/plugins/nvim-dap-ui.lua	/^    dap.listeners.after.event_initialized["dapui_config"] = function()$/;"	f
-dap.listeners.before.event_exited["dapui_config"] 	lua/plugins/nvim-dap-ui.lua	/^    dap.listeners.before.event_exited["dapui_config"] = function()$/;"	f
-dap.listeners.before.event_terminated["dapui_config"] 	lua/plugins/nvim-dap-ui.lua	/^    dap.listeners.before.event_terminated["dapui_config"] = function()$/;"	f
+dap.listeners.after.event_initialized["dapui_config"] 	lua/disable_plugins/nvim-dap-ui.lua	/^    dap.listeners.after.event_initialized["dapui_config"] = function()$/;"	f
+dap.listeners.before.event_exited["dapui_config"] 	lua/disable_plugins/nvim-dap-ui.lua	/^    dap.listeners.before.event_exited["dapui_config"] = function()$/;"	f
+dap.listeners.before.event_terminated["dapui_config"] 	lua/disable_plugins/nvim-dap-ui.lua	/^    dap.listeners.before.event_terminated["dapui_config"] = function()$/;"	f
 dapui.toggle 	lua/plugins/dapui-patch.lua	/^    dapui.toggle = function(...)$/;"	f
 display_callback 	lua/disable_plugins/nvim-dap-virtual-text.lua	/^    display_callback = function(variable, buf, stackframe, node, options)$/;"	f
-display_callback 	lua/plugins/nvim-dap-virtual-text.lua	/^    display_callback = function(variable, buf, stackframe, node, options)$/;"	f
 display_callback 	lua/plugins/python.lua	/^                display_callback = function(variable, _buf, _stackframe, _node)$/;"	f
 editing_text 	lua/plugins/neocord.lua	/^            editing_text = function(_)$/;"	f
 ensure_installed	lua/plugins/mason.lua	/^    local function ensure_installed()$/;"	f
+entry_maker 	lua/plugins/telescope-nvim.lua	/^                    entry_maker = function(entry)$/;"	f
 escapePattern	lua/plugins/minifiles.lua	/^        local function escapePattern(str)$/;"	f
 event 	lua/plugins/vim-tmux-navigator.lua	/^  event = function()$/;"	f
 expand 	lua/plugins/nvim-cmp.lua	/^                expand = function(args)$/;"	f
@@ -135,7 +136,7 @@ list_models 	lua/disable_plugins/gen.lua	/^        list_models = '<omitted lua f
 local ok, _ 	lua/core/utils.lua	/^    local ok, _ = pcall(function()$/;"	f
 local status, err 	lua/core/keymaps.lua	/^    local status, err = pcall(function()$/;"	f
 local status, err 	lua/core/keymaps.lua	/^  local status, err = pcall(function()$/;"	f
-local status, err 	lua/plugins/nvim-dap-ui.lua	/^      local status, err = pcall(function()$/;"	f
+local status, err 	lua/disable_plugins/nvim-dap-ui.lua	/^      local status, err = pcall(function()$/;"	f
 local ui_status, ui_err 	lua/core/keymaps.lua	/^            local ui_status, ui_err = pcall(function()$/;"	f
 map	lua/plugins/git-tools.lua	/^        local function map(mode, l, r, opts)$/;"	f
 map	lua/plugins/gitsigns.lua	/^      local function map(l, r, desc)$/;"	f
@@ -151,8 +152,9 @@ on_attach 	lua/plugins/gitsigns.lua	/^    on_attach = function(buffer)$/;"	f
 on_close 	lua/plugins/notify.lua	/^            on_close = function() end,$/;"	f
 on_exit	lua/plugins/minifiles.lua	/^            local function on_exit(content)$/;"	f
 on_init 	lua/plugins/nvim-lspconfig.lua	/^            on_init = function(client)$/;"	f
-on_open 	lua/plugins/notify.lua	/^            on_open = function() end,$/;"	f
+on_open 	lua/plugins/notify.lua	/^            on_open = function(win)$/;"	f
 on_open 	lua/plugins/nvterm.lua	/^                on_open = function()$/;"	f
+on_select 	lua/plugins/telescope-nvim.lua	/^                            on_select = function(prompt_bufnr)$/;"	f
 on_stderr 	lua/core/utils.lua	/^            on_stderr = function(_, data)$/;"	f
 opts 	lua/plugins/lualine-nvim.lua	/^    opts = function()$/;"	f
 original_windows_layout.WindowLayout.open 	lua/plugins/dapui-patch.lua	/^      original_windows_layout.WindowLayout.open = function(self)$/;"	f
@@ -160,7 +162,7 @@ parseGitStatus	lua/plugins/minifiles.lua	/^        local function parseGitStatus
 post_set_venv 	lua/plugins/python.lua	/^                post_set_venv = function()$/;"	f
 search_dir 	lua/plugins/python.lua	/^                search_dir = function()$/;"	f
 selection 	lua/disable_plugins/copilot-chat.lua	/^      selection = function(source)$/;"	f
-setup_dap_window_titles	lua/plugins/nvim-dap-ui.lua	/^    local function setup_dap_window_titles()$/;"	f
+setup_dap_window_titles	lua/disable_plugins/nvim-dap-ui.lua	/^    local function setup_dap_window_titles()$/;"	f
 updateGitStatus	lua/plugins/minifiles.lua	/^        local function updateGitStatus(buf_id)$/;"	f
 updateMiniWithGit	lua/plugins/minifiles.lua	/^        local function updateMiniWithGit(buf_id, gitStatusMap)$/;"	f
 vim.lsp.util.open_floating_preview	lua/plugins/nvim-lspconfig.lua	/^        function vim.lsp.util.open_floating_preview(contents, syntax, opts, ...)$/;"	f
