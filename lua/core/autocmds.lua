@@ -82,6 +82,7 @@ autocmd("FileType", {
         "dap-float",
         "qf",
         "diff",
+        "notify",
     },
     callback = function(event)
         vim.bo[event.buf].buflisted = false

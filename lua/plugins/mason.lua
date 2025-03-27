@@ -30,7 +30,7 @@ return {
         "gopls",
         "html",
         "cssls",
-        "typescript-language-server",
+        "ts_ls",
         "bashls",
         "jsonls",
         "yamlls",
