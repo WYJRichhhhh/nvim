@@ -161,6 +161,10 @@ return {
         lspconfig.pyright.setup({
             root_dir = require("lspconfig").util.root_pattern(".git", "pyrightconfig.json"),
             settings = {
+                pyright = {
+                    -- 禁用导入整理，交给Ruff处理
+                    disableOrganizeImports = true,
+                },
                 python = {
                     analysis = {
                         typeCheckingMode = "basic",
@@ -168,6 +172,12 @@ return {
                         useLibraryCodeForTypes = true,
                         diagnosticMode = "workspace",
                         autoImportCompletions = true,
+                        -- 设置诊断覆盖，避免与Ruff重复
+                        diagnosticSeverityOverrides = {
+                            -- 降低某些诊断的严重性或完全禁用那些Ruff已处理的
+                            reportUnusedImport = "none", -- 禁用未使用导入的报告，交给Ruff
+                            reportUnusedVariable = "warning", -- 保留为警告
+                        },
                     },
                     -- 设置Python路径
                     pythonPath = os.getenv("VIRTUAL_ENV") and os.getenv("VIRTUAL_ENV") .. "/bin/python" or "/usr/bin/python3",
@@ -178,11 +188,184 @@ return {
                     },
                 },
             },
+            -- 启用更丰富的capabilities，确保code_action功能
+            capabilities = (function()
+                -- 关键配置：使用标记系统标识Pyright的诊断
+                local capabilities = vim.lsp.protocol.make_client_capabilities()
+                capabilities.textDocument.publishDiagnostics.tagSupport.valueSet = { 2 }
+                capabilities.textDocument.codeAction = {
+                    dynamicRegistration = true,
+                    codeActionLiteralSupport = {
+                        codeActionKind = {
+                            valueSet = {
+                                "quickfix",
+                                "refactor",
+                                "refactor.extract",
+                                "refactor.inline",
+                                "refactor.rewrite",
+                                "source",
+                                "source.organizeImports",
+                            }
+                        }
+                    }
+                }
+                return capabilities
+            end)(),
         })
 
-        -- Ruff LSP - 更快的Python linter和formatter
+        -- Ruff - 更快的Python linter和formatter (使用新的ruff server而非ruff_lsp)
         lspconfig.ruff.setup({
             capabilities = capabilities,
+            settings = {
+                -- 使与pyright相同的Python配置
+                python = {
+                    pythonPath = os.getenv("VIRTUAL_ENV") and os.getenv("VIRTUAL_ENV") .. "/bin/python" or "/usr/bin/python3",
+                    extraPaths = {
+                        vim.fn.getcwd(),
+                        os.getenv("VIRTUAL_ENV") and os.getenv("VIRTUAL_ENV") .. "/lib/python*/site-packages" or "",
+                    },
+                },
+                -- Ruff特定设置
+                lint = {
+                    enable = true,
+                },
+                format = {
+                    enable = true,
+                },
+                organizeImports = {
+                    enable = true,
+                },
+                fixAll = {
+                    enable = true,
+                },
+            },
+        })
+
+        -- 添加LSP客户端功能区分 - 在LspAttach事件中
+        vim.api.nvim_create_autocmd("LspAttach", {
+            group = vim.api.nvim_create_augroup("UserLspActions", {}),
+            callback = function(ev)
+                local client = vim.lsp.get_client_by_id(ev.data.client_id)
+                if client then
+                    -- 添加函数显示当前行诊断来源
+                    vim.keymap.set("n", "<leader>ls", function()
+                        local line = vim.fn.line(".")
+                        local diagnostics = vim.diagnostic.get(0, {lnum = line - 1})
+                        if #diagnostics > 0 then
+                            local sources = {}
+                            for _, diag in ipairs(diagnostics) do
+                                table.insert(sources, diag.source or "未知来源")
+                            end
+                            local uniq_sources = {}
+                            for _, src in ipairs(sources) do
+                                uniq_sources[src] = true
+                            end
+                            local sources_str = "诊断来源: "
+                            for src, _ in pairs(uniq_sources) do
+                                sources_str = sources_str .. src .. ", "
+                            end
+                            vim.notify(sources_str:sub(1, -3), vim.log.levels.INFO)
+                        else
+                            vim.notify("当前行没有诊断信息", vim.log.levels.INFO)
+                        end
+                    end, { buffer = ev.buf, desc = "显示当前行诊断来源" })
+                    
+                    -- Ruff特定设置
+                    if client.name == "ruff" then
+                        -- 保留完整功能
+                    end
+                    
+                    -- Pyright特定设置
+                    if client.name == "pyright" then
+                        -- 保留完整功能
+                    end
+                    
+                    -- 为Python文件设置合并显示所有LSP的代码操作
+                    if vim.bo[ev.buf].filetype == "python" then
+                        -- 覆盖ga快捷键为自定义函数，收集所有服务器的code_actions
+                        vim.keymap.set("n", "ga", function()
+                            -- 创建请求参数
+                            local params = vim.lsp.util.make_range_params()
+                            params.context = { diagnostics = vim.lsp.diagnostic.get_line_diagnostics() }
+                            
+                            -- 收集所有响应
+                            local results = {}
+                            local clients = vim.lsp.get_active_clients({bufnr = ev.buf})
+                            local remaining = #clients
+                            
+                            for _, cl in ipairs(clients) do
+                                if cl.server_capabilities.codeActionProvider then
+                                    cl.request('textDocument/codeAction', params, function(err, actions, _)
+                                        remaining = remaining - 1
+                                        
+                                        if actions and not err then
+                                            -- 标记每个代码操作的来源并添加到结果
+                                            for _, action in ipairs(actions) do
+                                                action.title = "[" .. cl.name .. "] " .. action.title
+                                                table.insert(results, action)
+                                            end
+                                        end
+                                        
+                                        -- 当所有服务器都响应后显示合并的actions
+                                        if remaining == 0 then
+                                            if #results == 0 then
+                                                vim.notify("没有可用的代码操作", vim.log.levels.INFO)
+                                            else
+                                                vim.lsp.buf.code_action({
+                                                    actions = results
+                                                })
+                                            end
+                                        end
+                                    end, ev.buf)
+                                else
+                                    remaining = remaining - 1
+                                end
+                            end
+                        end, { buffer = ev.buf, desc = "显示所有代码操作" })
+                        
+                        -- 为特定服务器提供单独快捷键
+                        vim.keymap.set("n", "<leader>ap", function()
+                            local params = vim.lsp.util.make_range_params()
+                            params.context = { diagnostics = vim.lsp.diagnostic.get_line_diagnostics() }
+                            
+                            local pyright_client = vim.lsp.get_active_clients({name = "pyright", bufnr = ev.buf})[1]
+                            if pyright_client then
+                                pyright_client.request('textDocument/codeAction', params, function(err, actions, _)
+                                    if actions and not err and #actions > 0 then
+                                        vim.lsp.buf.code_action({
+                                            actions = actions
+                                        })
+                                    else
+                                        vim.notify("没有可用的Pyright代码操作", vim.log.levels.INFO)
+                                    end
+                                end, ev.buf)
+                            else
+                                vim.notify("Pyright客户端未连接", vim.log.levels.INFO)
+                            end
+                        end, { buffer = ev.buf, desc = "仅Pyright代码操作" })
+                        
+                        vim.keymap.set("n", "<leader>ar", function()
+                            local params = vim.lsp.util.make_range_params()
+                            params.context = { diagnostics = vim.lsp.diagnostic.get_line_diagnostics() }
+                            
+                            local ruff_client = vim.lsp.get_active_clients({name = "ruff", bufnr = ev.buf})[1]
+                            if ruff_client then
+                                ruff_client.request('textDocument/codeAction', params, function(err, actions, _)
+                                    if actions and not err and #actions > 0 then
+                                        vim.lsp.buf.code_action({
+                                            actions = actions
+                                        })
+                                    else
+                                        vim.notify("没有可用的Ruff代码操作", vim.log.levels.INFO)
+                                    end
+                                end, ev.buf)
+                            else
+                                vim.notify("Ruff客户端未连接", vim.log.levels.INFO)
+                            end
+                        end, { buffer = ev.buf, desc = "仅Ruff代码操作" })
+                    end
+                end
+            end,
         })
 
         -- Rust

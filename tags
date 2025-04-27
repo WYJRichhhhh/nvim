@@ -25,10 +25,11 @@ M.telescope_diff_from_history	lua/core/utils.lua	/^function M.telescope_diff_fro
 M.write_to_file	lua/core/utils.lua	/^function M.write_to_file(file, lines)$/;"	f
 RevealInMiniFiles	lua/core/keymaps.lua	/^function RevealInMiniFiles()$/;"	f
 ["<S-Tab>"] 	lua/plugins/nvim-cmp.lua	/^                ["<S-Tab>"] = cmp.mapping(function(fallback)$/;"	f
-["<S-Tab>"] 	lua/plugins/python-completion.lua	/^          ["<S-Tab>"] = cmp.mapping(function(fallback)$/;"	f
+["<S-Tab>"] 	lua/plugins/python.lua	/^                    ["<S-Tab>"] = cmp.mapping(function(fallback)$/;"	f
 ["<Tab>"] 	lua/plugins/nvim-cmp.lua	/^                ["<Tab>"] = cmp.mapping(function(fallback)$/;"	f
-["<Tab>"] 	lua/plugins/python-completion.lua	/^          ["<Tab>"] = cmp.mapping(function(fallback)$/;"	f
+["<Tab>"] 	lua/plugins/python.lua	/^                    ["<Tab>"] = cmp.mapping(function(fallback)$/;"	f
 activate_venv 	lua/plugins/python.lua	/^                activate_venv = function(path)$/;"	f
+args 	lua/plugins/python.lua	/^                    args = function()$/;"	f
 attach_mappings 	lua/core/utils.lua	/^        attach_mappings = function(prompt_bufnr)$/;"	f
 augroup	lua/plugins/minifiles.lua	/^        local function augroup(name)$/;"	f
 before 	lua/plugins/nvim-cmp.lua	/^                    before = function(entry, vim_item)$/;"	f
@@ -43,6 +44,8 @@ callback 	lua/plugins/minifiles.lua	/^            callback = function(sii)$/;"	f
 callback 	lua/plugins/nvim-lint.lua	/^      callback = function()$/;"	f
 callback 	lua/plugins/nvim-lspconfig.lua	/^            callback = function(ev)$/;"	f
 callback 	lua/plugins/nvterm.lua	/^            callback = function()$/;"	f
+callback 	lua/plugins/python.lua	/^                        callback = function()$/;"	f
+callback 	lua/plugins/python.lua	/^                callback = function()$/;"	f
 callback 	lua/plugins/resession.lua	/^            callback = function()$/;"	f
 clearCache	lua/plugins/minifiles.lua	/^        local function clearCache()$/;"	f
 color 	lua/plugins/lualine-nvim.lua	/^                        color = function()$/;"	f
@@ -79,8 +82,6 @@ config 	lua/plugins/nvim-lspconfig.lua	/^    config = function(_, opts)$/;"	f
 config 	lua/plugins/nvim-navic.lua	/^    config = function()$/;"	f
 config 	lua/plugins/nvim-treesitter.lua	/^    config = function(_, opts)$/;"	f
 config 	lua/plugins/nvterm.lua	/^    config = function()$/;"	f
-config 	lua/plugins/python-completion.lua	/^    config = function()$/;"	f
-config 	lua/plugins/python-tools.lua	/^    config = function()$/;"	f
 config 	lua/plugins/python.lua	/^        config = function()$/;"	f
 config 	lua/plugins/render-markdown.lua	/^    config = function()$/;"	f
 config 	lua/plugins/resession.lua	/^    config = function()$/;"	f
@@ -102,7 +103,7 @@ entry_maker 	lua/plugins/telescope-nvim.lua	/^                    entry_maker = 
 escapePattern	lua/plugins/minifiles.lua	/^        local function escapePattern(str)$/;"	f
 event 	lua/plugins/vim-tmux-navigator.lua	/^  event = function()$/;"	f
 expand 	lua/plugins/nvim-cmp.lua	/^                expand = function(args)$/;"	f
-expand 	lua/plugins/python-completion.lua	/^          expand = function(args)$/;"	f
+expand 	lua/plugins/python.lua	/^                    expand = function(args)$/;"	f
 fetchGitStatus	lua/plugins/minifiles.lua	/^        local function fetchGitStatus(cwd, callback)$/;"	f
 fmt 	lua/plugins/lualine-nvim.lua	/^                        fmt = function(mode)$/;"	f
 fmt 	lua/plugins/lualine-nvim.lua	/^                        fmt = function(name)$/;"	f
@@ -145,6 +146,7 @@ map("n", "<leader>gb", function() gs.blame_line{full	lua/plugins/git-tools.lua	/
 map("v", "<leader>gr", function() gs.reset_hunk {vim.fn.line("."), vim.fn.line("v")} end, { desc 	lua/plugins/git-tools.lua	/^        map("v", "<leader>gr", function() gs.reset_hunk {vim.fn.line("."), vim.fn.line("v")} end, { desc = "重置选中区域" })$/;"	f
 map("v", "<leader>gs", function() gs.stage_hunk {vim.fn.line("."), vim.fn.line("v")} end, { desc 	lua/plugins/git-tools.lua	/^        map("v", "<leader>gs", function() gs.stage_hunk {vim.fn.line("."), vim.fn.line("v")} end, { desc = "暂存选中区域" })$/;"	f
 mapSymbols	lua/plugins/minifiles.lua	/^        local function mapSymbols(status)$/;"	f
+module 	lua/plugins/python.lua	/^                    module = function()$/;"	f
 nnoremap	ftplugin/java.lua	/^local function nnoremap(rhs, lhs, bufopts, desc)$/;"	f
 on_attach 	ftplugin/java.lua	/^    on_attach = function(client, bufnr)$/;"	f
 on_attach 	lua/plugins/git-tools.lua	/^      on_attach = function(bufnr)$/;"	f
@@ -160,8 +162,10 @@ opts 	lua/plugins/lualine-nvim.lua	/^    opts = function()$/;"	f
 original_windows_layout.WindowLayout.open 	lua/plugins/dapui-patch.lua	/^      original_windows_layout.WindowLayout.open = function(self)$/;"	f
 parseGitStatus	lua/plugins/minifiles.lua	/^        local function parseGitStatus(content)$/;"	f
 post_set_venv 	lua/plugins/python.lua	/^                post_set_venv = function()$/;"	f
+program 	lua/plugins/python.lua	/^                    program = function()$/;"	f
 search_dir 	lua/plugins/python.lua	/^                search_dir = function()$/;"	f
 selection 	lua/disable_plugins/copilot-chat.lua	/^      selection = function(source)$/;"	f
+setup_dap_python	lua/plugins/python.lua	/^            local function setup_dap_python(python_path)$/;"	f
 setup_dap_window_titles	lua/disable_plugins/nvim-dap-ui.lua	/^    local function setup_dap_window_titles()$/;"	f
 updateGitStatus	lua/plugins/minifiles.lua	/^        local function updateGitStatus(buf_id)$/;"	f
 updateMiniWithGit	lua/plugins/minifiles.lua	/^        local function updateMiniWithGit(buf_id, gitStatusMap)$/;"	f
