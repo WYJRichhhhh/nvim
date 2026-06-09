@@ -163,60 +163,9 @@ clear
             end,
         })
 
-        -- 监听环境变量变化
-        vim.api.nvim_create_autocmd("User", {
-            pattern = "VenvSelectorVenvChanged",
-            callback = function()
-                local venv = os.getenv("VIRTUAL_ENV")
-                if venv then
-                    -- 获取项目根目录
-                    local project_root = vim.fn.getcwd()
-
-                    -- 获取所有终端窗口
-                    local terminals = require("nvterm").get_all()
-                    for _, term in ipairs(terminals) do
-                        -- 检查是否是 pyenv 环境
-                        local is_pyenv = string.find(venv, "%.pyenv") ~= nil
-
-                        -- 构建环境切换命令
-                        local commands
-                        if is_pyenv then
-                            -- 从路径中提取环境名称
-                            local venv_name = vim.fn.fnamemodify(venv, ":t")
-
-                            -- 构建激活命令
-                            commands = string.format(
-                                [[
-export PYENV_ROOT="$HOME/.pyenv"
-export PATH="$PYENV_ROOT/bin:$PATH"
-eval "$(pyenv init -)"
-export VIRTUAL_ENV="%s"
-export PYTHONPATH="%s:$PYTHONPATH"
-pyenv shell %s 2>/dev/null
-clear
-]],
-                                venv,
-                                project_root,
-                                venv_name
-                            )
-                        else
-                            -- 普通虚拟环境
-                            commands = string.format(
-                                [[
-source %s/bin/activate 2>/dev/null
-export PYTHONPATH="%s:$PYTHONPATH"
-clear
-]],
-                                venv,
-                                project_root
-                            )
-                        end
-
-                        -- 发送到终端
-                        vim.api.nvim_chan_send(term, commands)
-                    end
-                end
-            end,
-        })
+        -- 注：原先这里监听 venv-selector 的 VenvSelectorVenvChanged 事件，
+        -- 切换虚拟环境时同步刷新所有终端。该插件已停用（见
+        -- disable_plugins/），事件不再触发，故移除这段死代码。
+        -- 终端的环境激活仍由上面的 TermOpen 自动命令依据 $VIRTUAL_ENV 处理。
     end,
 }

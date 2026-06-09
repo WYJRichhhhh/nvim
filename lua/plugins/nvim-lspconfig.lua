@@ -10,7 +10,7 @@ return {
         { "williamboman/mason.nvim" },
         -- https://github.com/williamboman/mason-lspconfig.nvim
         { "williamboman/mason-lspconfig.nvim" },
-        
+
         -- LSP补全集成
         { "hrsh7th/cmp-nvim-lsp" },
 
@@ -38,7 +38,7 @@ return {
         -- 使用nvim-cmp的LSP能力提供补全
         local lspconfig = require("lspconfig")
         local capabilities = require("cmp_nvim_lsp").default_capabilities()
-        
+
         for server, config in pairs(opts.servers or {}) do
             config.capabilities = vim.tbl_deep_extend("force", capabilities, config.capabilities or {})
             lspconfig[server].setup(config)
@@ -68,17 +68,17 @@ return {
                 vim.keymap.set("n", "gi", function()
                     vim.lsp.buf.implementation()
                 end, { buffer = ev.buf, desc = "跳转到实现" })
-                
+
                 -- 跳转到定义
                 vim.keymap.set("n", "gd", function()
                     vim.lsp.buf.definition()
                 end, { buffer = ev.buf, desc = "跳转到定义" })
-                
+
                 -- 跳转到类型定义
                 vim.keymap.set("n", "gt", function()
                     vim.lsp.buf.type_definition()
                 end, { buffer = ev.buf, desc = "跳转到类型定义" })
-                
+
                 -- 跳转到引用
                 vim.keymap.set("n", "gr", function()
                     vim.lsp.buf.references()
@@ -88,17 +88,17 @@ return {
 
         -- 无需配置的LSP服务器
         local no_config_servers = {
-            "docker_compose_language_service",
-            "dockerls",
+            -- "docker_compose_language_service",
+            -- "dockerls",
             "html",
             "jsonls",
             "nil_ls",
             "ols",
             "tailwindcss",
             "taplo",
-            "templ", -- requires gopls in PATH, mason probably won't work depending on the OS
+            -- "templ", -- requires gopls in PATH, mason probably won't work depending on the OS
             "yamlls",
-            "solargraph",
+            -- "solargraph",
         }
 
         -- 加载所有无需配置的LSP服务器
@@ -157,88 +157,57 @@ return {
             end,
         })
 
-        -- Python
+        -- Python --------------------------------------------------------------
+        -- 关键点：解释器不写死，而是在每个 buffer 启动 LSP 前，
+        -- 从“文件所属的项目根”推断出对应的 .venv/bin/python（见 core/python.lua）。
+        -- 这样从任意目录打开任意 uv 项目，pyright 都能锁定到该项目自己的环境。
+        local py = require("core.python")
+
+        -- pyright：负责类型检查、跳转定义/引用、补全、悬停文档。
         lspconfig.pyright.setup({
-            root_dir = require("lspconfig").util.root_pattern(".git", "pyrightconfig.json"),
+            -- root_dir 决定 LSP 把哪个目录当作工作区根。
+            -- 用我们的标记列表（pyproject.toml / uv.lock 优先），避免漂移到上层 .git。
+            root_dir = function(fname)
+                return py.root(fname)
+            end,
+            -- before_init 在“握手发出前”根据这次的工作区根注入解释器路径，
+            -- 是实现“每个项目用各自 .venv”的关键钩子。
+            before_init = function(_, config)
+                config.settings = config.settings or {}
+                config.settings.python = config.settings.python or {}
+                config.settings.python.pythonPath = py.venv_python(config.root_dir)
+            end,
             settings = {
-                pyright = {
-                    -- 禁用导入整理，交给Ruff处理
-                    disableOrganizeImports = true,
-                },
+                -- 导入整理交给 Ruff，避免和 Ruff 抢同一个 code action。
+                pyright = { disableOrganizeImports = true },
                 python = {
                     analysis = {
                         typeCheckingMode = "basic",
                         autoSearchPaths = true,
                         useLibraryCodeForTypes = true,
-                        diagnosticMode = "workspace",
+                        diagnosticMode = "openFilesOnly", -- 只诊断打开的文件，避免大项目卡顿
                         autoImportCompletions = true,
-                        -- 设置诊断覆盖，避免与Ruff重复
                         diagnosticSeverityOverrides = {
-                            -- 降低某些诊断的严重性或完全禁用那些Ruff已处理的
-                            reportUnusedImport = "none", -- 禁用未使用导入的报告，交给Ruff
-                            reportUnusedVariable = "warning", -- 保留为警告
+                            -- 未使用导入/变量交给 Ruff 报，pyright 这里关掉避免重复。
+                            reportUnusedImport = "none",
+                            reportUnusedVariable = "none",
                         },
                     },
-                    -- 设置Python路径
-                    pythonPath = os.getenv("VIRTUAL_ENV") and os.getenv("VIRTUAL_ENV") .. "/bin/python" or "/usr/bin/python3",
-                    -- 设置额外的Python路径
-                    extraPaths = {
-                        vim.fn.getcwd(),
-                        os.getenv("VIRTUAL_ENV") and os.getenv("VIRTUAL_ENV") .. "/lib/python*/site-packages" or "",
-                    },
                 },
             },
-            -- 启用更丰富的capabilities，确保code_action功能
-            capabilities = (function()
-                -- 关键配置：使用标记系统标识Pyright的诊断
-                local capabilities = vim.lsp.protocol.make_client_capabilities()
-                capabilities.textDocument.publishDiagnostics.tagSupport.valueSet = { 2 }
-                capabilities.textDocument.codeAction = {
-                    dynamicRegistration = true,
-                    codeActionLiteralSupport = {
-                        codeActionKind = {
-                            valueSet = {
-                                "quickfix",
-                                "refactor",
-                                "refactor.extract",
-                                "refactor.inline",
-                                "refactor.rewrite",
-                                "source",
-                                "source.organizeImports",
-                            }
-                        }
-                    }
-                }
-                return capabilities
-            end)(),
         })
 
-        -- Ruff - 更快的Python linter和formatter (使用新的ruff server而非ruff_lsp)
+        -- Ruff：负责 lint + 自动修复 + import 排序，比 flake8/isort 快很多。
+        -- 用 mason 装的 ruff 二进制（自带的 `ruff server`，不是已废弃的 ruff_lsp）。
         lspconfig.ruff.setup({
-            capabilities = capabilities,
-            settings = {
-                -- 使与pyright相同的Python配置
-                python = {
-                    pythonPath = os.getenv("VIRTUAL_ENV") and os.getenv("VIRTUAL_ENV") .. "/bin/python" or "/usr/bin/python3",
-                    extraPaths = {
-                        vim.fn.getcwd(),
-                        os.getenv("VIRTUAL_ENV") and os.getenv("VIRTUAL_ENV") .. "/lib/python*/site-packages" or "",
-                    },
-                },
-                -- Ruff特定设置
-                lint = {
-                    enable = true,
-                },
-                format = {
-                    enable = true,
-                },
-                organizeImports = {
-                    enable = true,
-                },
-                fixAll = {
-                    enable = true,
-                },
-            },
+            cmd = { vim.fn.stdpath("data") .. "/mason/bin/ruff", "server" },
+            root_dir = function(fname)
+                return py.root(fname)
+            end,
+            -- Ruff 不做 hover，让 pyright 独占文档悬停，避免两个来源打架。
+            on_attach = function(client, _)
+                client.server_capabilities.hoverProvider = false
+            end,
         })
 
         -- 添加LSP客户端功能区分 - 在LspAttach事件中
@@ -250,7 +219,7 @@ return {
                     -- 添加函数显示当前行诊断来源
                     vim.keymap.set("n", "<leader>ls", function()
                         local line = vim.fn.line(".")
-                        local diagnostics = vim.diagnostic.get(0, {lnum = line - 1})
+                        local diagnostics = vim.diagnostic.get(0, { lnum = line - 1 })
                         if #diagnostics > 0 then
                             local sources = {}
                             for _, diag in ipairs(diagnostics) do
@@ -269,101 +238,6 @@ return {
                             vim.notify("当前行没有诊断信息", vim.log.levels.INFO)
                         end
                     end, { buffer = ev.buf, desc = "显示当前行诊断来源" })
-                    
-                    -- Ruff特定设置
-                    if client.name == "ruff" then
-                        -- 保留完整功能
-                    end
-                    
-                    -- Pyright特定设置
-                    if client.name == "pyright" then
-                        -- 保留完整功能
-                    end
-                    
-                    -- 为Python文件设置合并显示所有LSP的代码操作
-                    if vim.bo[ev.buf].filetype == "python" then
-                        -- 覆盖ga快捷键为自定义函数，收集所有服务器的code_actions
-                        vim.keymap.set("n", "ga", function()
-                            -- 创建请求参数
-                            local params = vim.lsp.util.make_range_params()
-                            params.context = { diagnostics = vim.lsp.diagnostic.get_line_diagnostics() }
-                            
-                            -- 收集所有响应
-                            local results = {}
-                            local clients = vim.lsp.get_active_clients({bufnr = ev.buf})
-                            local remaining = #clients
-                            
-                            for _, cl in ipairs(clients) do
-                                if cl.server_capabilities.codeActionProvider then
-                                    cl.request('textDocument/codeAction', params, function(err, actions, _)
-                                        remaining = remaining - 1
-                                        
-                                        if actions and not err then
-                                            -- 标记每个代码操作的来源并添加到结果
-                                            for _, action in ipairs(actions) do
-                                                action.title = "[" .. cl.name .. "] " .. action.title
-                                                table.insert(results, action)
-                                            end
-                                        end
-                                        
-                                        -- 当所有服务器都响应后显示合并的actions
-                                        if remaining == 0 then
-                                            if #results == 0 then
-                                                vim.notify("没有可用的代码操作", vim.log.levels.INFO)
-                                            else
-                                                vim.lsp.buf.code_action({
-                                                    actions = results
-                                                })
-                                            end
-                                        end
-                                    end, ev.buf)
-                                else
-                                    remaining = remaining - 1
-                                end
-                            end
-                        end, { buffer = ev.buf, desc = "显示所有代码操作" })
-                        
-                        -- 为特定服务器提供单独快捷键
-                        vim.keymap.set("n", "<leader>ap", function()
-                            local params = vim.lsp.util.make_range_params()
-                            params.context = { diagnostics = vim.lsp.diagnostic.get_line_diagnostics() }
-                            
-                            local pyright_client = vim.lsp.get_active_clients({name = "pyright", bufnr = ev.buf})[1]
-                            if pyright_client then
-                                pyright_client.request('textDocument/codeAction', params, function(err, actions, _)
-                                    if actions and not err and #actions > 0 then
-                                        vim.lsp.buf.code_action({
-                                            actions = actions
-                                        })
-                                    else
-                                        vim.notify("没有可用的Pyright代码操作", vim.log.levels.INFO)
-                                    end
-                                end, ev.buf)
-                            else
-                                vim.notify("Pyright客户端未连接", vim.log.levels.INFO)
-                            end
-                        end, { buffer = ev.buf, desc = "仅Pyright代码操作" })
-                        
-                        vim.keymap.set("n", "<leader>ar", function()
-                            local params = vim.lsp.util.make_range_params()
-                            params.context = { diagnostics = vim.lsp.diagnostic.get_line_diagnostics() }
-                            
-                            local ruff_client = vim.lsp.get_active_clients({name = "ruff", bufnr = ev.buf})[1]
-                            if ruff_client then
-                                ruff_client.request('textDocument/codeAction', params, function(err, actions, _)
-                                    if actions and not err and #actions > 0 then
-                                        vim.lsp.buf.code_action({
-                                            actions = actions
-                                        })
-                                    else
-                                        vim.notify("没有可用的Ruff代码操作", vim.log.levels.INFO)
-                                    end
-                                end, ev.buf)
-                            else
-                                vim.notify("Ruff客户端未连接", vim.log.levels.INFO)
-                            end
-                        end, { buffer = ev.buf, desc = "仅Ruff代码操作" })
-                    end
                 end
             end,
         })

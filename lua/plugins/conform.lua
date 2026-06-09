@@ -18,6 +18,8 @@ return {
         lua = { "stylua" },
         markdown = { "prettier" },
         nix = { "nixfmt" },
+        -- Python：先整理导入，再用 ruff 格式化（等价 isort + black，但更快）。
+        python = { "ruff_organize_imports", "ruff_format" },
         rust = { "rustfmt" },
         scss = { "prettier" },
         sh = { "shfmt" },
