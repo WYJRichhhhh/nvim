@@ -1,3 +1,10 @@
 # 机器特定的本地覆盖（每台机器各自一份，绝不入库）。
 # 见 lua/local.lua.example 模板与 CLAUDE.md「跨机器移植」一节。
 lua/local.lua
+
+# 编辑会话产物：vim swap 文件，跟具体进程/主机绑定，绝不入库。
+*.sw[a-p]
+
+# ctags 生成的标签文件（gutentags 会按机器自动生成，见 lua/plugins/gutentags.lua）。
+tags
+.tags

@@ -1,4 +1,4 @@
--- LSP Support
+-- LSP 支持
 --
 -- 已迁移到 Neovim 0.11 原生 LSP API：用 `vim.lsp.config()` 声明配置、
 -- `vim.lsp.enable()` 启用，不再调用已废弃的 `require("lspconfig")[server].setup()`。
@@ -10,12 +10,12 @@
 -- 注意这是“深合并 + force”，对函数字段（on_attach/before_init/on_init）是“整体替换”，
 -- 所以覆盖时不要顺手重写 server 自带的这些钩子，否则会丢掉它内置的功能。
 return {
-    -- LSP Configuration
+    -- LSP 配置
     -- https://github.com/neovim/nvim-lspconfig
     "neovim/nvim-lspconfig",
     event = { "BufReadPre", "BufNewFile" },
     dependencies = {
-        -- LSP Management
+        -- LSP 管理
         -- https://github.com/williamboman/mason.nvim
         { "williamboman/mason.nvim" },
         -- https://github.com/williamboman/mason-lspconfig.nvim
@@ -24,11 +24,11 @@ return {
         -- LSP补全集成
         { "hrsh7th/cmp-nvim-lsp" },
 
-        -- Useful status updates for LSP
+        -- LSP 的状态更新提示，体验更好
         -- https://github.com/j-hui/fidget.nvim
         { "j-hui/fidget.nvim", opts = {} },
 
-        -- Additional lua configuration, makes nvim stuff amazing!
+        -- 额外的 lua 配置，让写 nvim 配置体验大幅提升
         -- https://github.com/folke/neodev.nvim
         { "folke/neodev.nvim" },
         {
@@ -263,11 +263,11 @@ return {
             "rust_analyzer",
         })
 
-        -- Globally configure all LSP floating preview popups (like hover, signature help, etc)
+        -- 全局配置所有 LSP 浮动预览弹窗（如 hover、签名帮助等）
         local open_floating_preview = vim.lsp.util.open_floating_preview
         function vim.lsp.util.open_floating_preview(contents, syntax, opts, ...)
             opts = opts or {}
-            opts.border = opts.border or "rounded" -- Set border to rounded
+            opts.border = opts.border or "rounded" -- 边框设为圆角
             return open_floating_preview(contents, syntax, opts, ...)
         end
     end,

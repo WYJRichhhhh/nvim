@@ -1,4 +1,4 @@
--- Comment/Uncomment Lines of Code
+-- 注释/取消注释代码行
 -- return {
 --   -- https://github.com/tpope/vim-commentary
 --   'tpope/vim-commentary',

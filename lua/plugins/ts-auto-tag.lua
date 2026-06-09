@@ -4,14 +4,13 @@ return {
   config = function()
     require('nvim-ts-autotag').setup({
       opts = {
-        -- Defaults
-        enable_close = true,      -- Auto close tags
-        enable_rename = true,     -- Auto rename pairs of tags
-        enable_close_on_slash = false -- Auto close on trailing </
+        -- 默认值
+        enable_close = true,      -- 自动闭合标签
+        enable_rename = true,     -- 成对标签自动重命名
+        enable_close_on_slash = false -- 输入末尾的 </ 时自动闭合
       },
-      -- Also override individual filetype configs, these take priority.
-      -- Empty by default, useful if one of the "opts" global settings
-      -- doesn't work well in a specific filetype
+      -- 也可按文件类型单独覆盖，优先级高于上面的全局配置。
+      -- 默认为空；当某项全局 "opts" 设置在特定文件类型下表现不佳时很有用。
       -- per_filetype = {
       --   ["html"] = {
       --     enable_close = false

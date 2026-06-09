@@ -38,7 +38,7 @@ local bundles = {
     ),
 }
 
--- Helper function for creating keymaps
+-- 创建 keymap 的辅助函数
 local function nnoremap(rhs, lhs, bufopts, desc)
     bufopts.desc = desc
     vim.keymap.set("n", rhs, lhs, bufopts)
@@ -53,11 +53,10 @@ vim.list_extend(
     )
 )
 
--- See `:help vim.lsp.start_client` for an overview of the supported `config` options.
--- 查看vim.lsp.start_client的帮助文档，了解支持的config选项
+-- 查看 `:help vim.lsp.start_client` 的帮助文档，了解支持的 config 选项
 local config = {
     -- 启动语言服务器的命令
-    -- See: https://github.com/eclipse/eclipse.jdt.ls#running-from-the-command-line
+    -- 参见: https://github.com/eclipse/eclipse.jdt.ls#running-from-the-command-line
     cmd = {
         -- 使用jenv执行java，这样可以切换不同的java版本
         "java",
@@ -74,9 +73,9 @@ local config = {
         "--add-opens",
         "java.base/java.lang=ALL-UNNAMED",
 
-        -- Eclipse jdtls location
+        -- Eclipse jdtls 所在位置
         "-jar",
-        -- self  compile path /dev/java/eclipse.jdt.ls/org.eclipse.jdt.ls.product/target/repository/plugins/org.eclipse.equinox.launcher_1.6.900.v20240613-2009.jar
+        -- 自编译路径 /dev/java/eclipse.jdt.ls/org.eclipse.jdt.ls.product/target/repository/plugins/org.eclipse.equinox.launcher_1.6.900.v20240613-2009.jar
 
         jdtls_launcher_jar(),
         -- config 目录按运行平台自动选择（见顶部 jdtls_config_dir）。
@@ -90,7 +89,7 @@ local config = {
     root_dir = require("jdtls.setup").find_root({ ".git", "mvnw", "pom.xml", "build.gradle" }),
 
     -- 此处可以配置Eclipse jdt.ls的特定配置
-    -- See https://github.com/eclipse/eclipse.jdt.ls/wiki/Running-the-JAVA-LS-server-from-the-command-line#initialize-request
+    -- 参见 https://github.com/eclipse/eclipse.jdt.ls/wiki/Running-the-JAVA-LS-server-from-the-command-line#initialize-request
     settings = {
         java = {
             -- 主 JDK（需 17+）。优先用本机 local.lua 指定的路径；没配就退回
@@ -127,8 +126,7 @@ local config = {
             format = {
                 -- 启用代码格式化
                 enabled = true,
-                -- 可以参考特定的文件/URL进行格式化
-                -- Formatting works by default, but you can refer to a specific file/URL if you choose
+                -- 默认即可格式化；如有需要，也可指定特定的文件/URL 作为格式化规范
                 -- settings = {
                 --   url = "https://github.com/google/styleguide/blob/gh-pages/intellij-java-google-style.xml",
                 --   profile = "GoogleStyle",
@@ -173,7 +171,6 @@ local config = {
         allow_incremental_sync = true, -- 启用增量同步
     },
     init_options = {
-        -- References the bundles defined above to support Debugging and Unit Testing
         -- 引用上面定义的bundles以支持调试和单元测试
         bundles = bundles,
     },

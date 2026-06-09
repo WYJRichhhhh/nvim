@@ -1,4 +1,4 @@
--- General purpose linters
+-- 通用语言的 linter
 return {
   -- https://github.com/mfussenegger/nvim-lint
   'mfussenegger/nvim-lint',
@@ -9,7 +9,7 @@ return {
     -- 如需对其它语言加 linter，按 filetype 添加即可。
     require('lint').linters_by_ft = {}
 
-    -- Automatically run linters after saving.
+    -- 保存后自动运行 linter
     vim.api.nvim_create_autocmd({ "BufWritePost" }, {
       callback = function()
         require("lint").try_lint()

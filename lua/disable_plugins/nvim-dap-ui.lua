@@ -1,4 +1,4 @@
--- Debugging Support
+-- 调试支持
 return {
   -- https://github.com/rcarriga/nvim-dap-ui
   'rcarriga/nvim-dap-ui',
@@ -7,9 +7,9 @@ return {
     -- https://github.com/mfussenegger/nvim-dap
     'mfussenegger/nvim-dap',
     -- https://github.com/theHamsta/nvim-dap-virtual-text
-    'theHamsta/nvim-dap-virtual-text', -- inline variable text while debugging
+    'theHamsta/nvim-dap-virtual-text', -- 调试时在行内显示变量值
     -- https://github.com/nvim-telescope/telescope-dap.nvim
-    'nvim-telescope/telescope-dap.nvim', -- telescope integration with dap
+    'nvim-telescope/telescope-dap.nvim', -- telescope 与 dap 的集成
     "nvim-neotest/nvim-nio",
   },
   opts = {
@@ -63,7 +63,7 @@ return {
           }
         },
         size = 40,
-        position = "left", -- Can be "left" or "right"
+        position = "left", -- 可取 "left" 或 "right"
       },
       {
         elements = {
@@ -71,7 +71,7 @@ return {
           "console",
         },
         size = 10,
-        position = "bottom", -- Can be "bottom" or "top"
+        position = "bottom", -- 可取 "bottom" 或 "top"
       }
     },
     mappings = {

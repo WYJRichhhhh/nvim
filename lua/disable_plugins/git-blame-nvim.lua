@@ -4,8 +4,8 @@ return {
   'f-person/git-blame.nvim',
   event = 'VeryLazy',
   opts = {
-    enabled = false, -- disable by default, enabled only on keymap
-    date_format = '%m/%d/%y %H:%M:%S', -- more concise date format
+    enabled = false, -- 默认关闭，仅在按键触发时启用
+    date_format = '%m/%d/%y %H:%M:%S', -- 更简洁的日期格式
   }
 }
 

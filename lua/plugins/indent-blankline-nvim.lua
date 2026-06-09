@@ -1,4 +1,4 @@
--- Indentation guides
+-- 缩进参考线
 return {
   -- https://github.com/lukas-reineke/indent-blankline.nvim
   "lukas-reineke/indent-blankline.nvim",

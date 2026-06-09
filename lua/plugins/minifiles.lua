@@ -25,26 +25,26 @@ return {
         local autocmd = vim.api.nvim_create_autocmd
         local _, MiniFiles = pcall(require, "mini.files")
 
-        -- Cache for git status
+        -- git 状态缓存
         local gitStatusCache = {}
-        local cacheTimeout = 2000 -- Cache timeout in milliseconds
+        local cacheTimeout = 2000 -- 缓存有效期（毫秒）
 
         local function mapSymbols(status)
             local statusMap = {
-                [" M"] = { symbol = "", hlGroup = "MiniDiffSignChange" }, -- Modified in the working directory
-                ["M "] = { symbol = "", hlGroup = "MiniDiffSignAdd" }, -- modified in index
-                ["MM"] = { symbol = "", hlGroup = "MiniDiffSignChange" }, -- modified in both working tree and index
-                ["A "] = { symbol = "", hlGroup = "MiniDiffSignAdd" }, -- Added to the staging area, new file
-                ["AA"] = { symbol = "≈", hlGroup = "MiniDiffSignAdd" }, -- file is added in both working tree and index
-                ["D "] = { symbol = "-", hlGroup = "MiniDiffSignDelete" }, -- Deleted from the staging area
-                ["AM"] = { symbol = "⊕", hlGroup = "MiniDiffSignChange" }, -- added in working tree, modified in index
-                ["AD"] = { symbol = "-•", hlGroup = "MiniDiffSignChange" }, -- Added in the index and deleted in the working directory
-                ["R "] = { symbol = "→", hlGroup = "MiniDiffSignChange" }, -- Renamed in the index
-                ["U "] = { symbol = "‖", hlGroup = "MiniDiffSignChange" }, -- Unmerged path
-                ["UU"] = { symbol = "⇄", hlGroup = "MiniDiffSignAdd" }, -- file is unmerged
-                ["UA"] = { symbol = "⊕", hlGroup = "MiniDiffSignAdd" }, -- file is unmerged and added in working tree
-                ["??"] = { symbol = "", hlGroup = "MiniDiffSignDelete" }, -- Untracked files
-                ["!!"] = { symbol = "", hlGroup = "MiniDiffSignChange" }, -- Ignored files
+                [" M"] = { symbol = "", hlGroup = "MiniDiffSignChange" }, -- 工作区已修改
+                ["M "] = { symbol = "", hlGroup = "MiniDiffSignAdd" }, -- 暂存区已修改
+                ["MM"] = { symbol = "", hlGroup = "MiniDiffSignChange" }, -- 工作区和暂存区都已修改
+                ["A "] = { symbol = "", hlGroup = "MiniDiffSignAdd" }, -- 已加入暂存区的新文件
+                ["AA"] = { symbol = "≈", hlGroup = "MiniDiffSignAdd" }, -- 工作区和暂存区都新增
+                ["D "] = { symbol = "-", hlGroup = "MiniDiffSignDelete" }, -- 从暂存区删除
+                ["AM"] = { symbol = "⊕", hlGroup = "MiniDiffSignChange" }, -- 工作区新增、暂存区已修改
+                ["AD"] = { symbol = "-•", hlGroup = "MiniDiffSignChange" }, -- 暂存区新增、工作区已删除
+                ["R "] = { symbol = "→", hlGroup = "MiniDiffSignChange" }, -- 暂存区重命名
+                ["U "] = { symbol = "‖", hlGroup = "MiniDiffSignChange" }, -- 未合并路径
+                ["UU"] = { symbol = "⇄", hlGroup = "MiniDiffSignAdd" }, -- 文件未合并
+                ["UA"] = { symbol = "⊕", hlGroup = "MiniDiffSignAdd" }, -- 文件未合并且在工作区新增
+                ["??"] = { symbol = "", hlGroup = "MiniDiffSignDelete" }, -- 未跟踪文件
+                ["!!"] = { symbol = "", hlGroup = "MiniDiffSignChange" }, -- 被忽略的文件
             }
 
             local result = statusMap[status] or { symbol = "?", hlGroup = "NonText" }
@@ -110,28 +110,28 @@ return {
         -- git状态解析
         local function parseGitStatus(content)
             local gitStatusMap = {}
-            -- lua match is faster than vim.split (in my experience )
+            -- 用 lua match 比 vim.split 更快（个人经验）
             for line in content:gmatch("[^\r\n]+") do
                 local status, filePath = string.match(line, "^(..)%s+(.*)")
-                -- Split the file path into parts
+                -- 把文件路径按 / 拆成各级
                 local parts = {}
                 for part in filePath:gmatch("[^/]+") do
                     table.insert(parts, part)
                 end
-                -- Start with the root directory
+                -- 从根目录开始逐级拼
                 local currentKey = ""
                 for i, part in ipairs(parts) do
                     if i > 1 then
-                        -- Concatenate parts with a separator to create a unique key
+                        -- 用分隔符把各级拼起来，得到唯一的 key
                         currentKey = currentKey .. "/" .. part
                     else
                         currentKey = part
                     end
-                    -- If it's the last part, it's a file, so add it with its status
+                    -- 如果是最后一级，说明是文件，连同它的状态一起记录
                     if i == #parts then
                         gitStatusMap[currentKey] = status
                     else
-                        -- If it's not the last part, it's a directory. Check if it exists, if not, add it.
+                        -- 否则是目录：还没记录过就补上
                         if not gitStatusMap[currentKey] then
                             gitStatusMap[currentKey] = status
                         end

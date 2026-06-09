@@ -13,7 +13,7 @@ if not vim.loop.fs_stat(lazypath) then
         "clone",
         "--filter=blob:none",
         "https://github.com/folke/lazy.nvim.git",
-        "--branch=stable", -- latest stable release
+        "--branch=stable", -- 使用最新的稳定版
         lazypath,
     })
 end
@@ -39,6 +39,8 @@ require("lazy").setup({
     -- 启用插件更新检查器
     checker = { enabled = true },
     -- 设置开发插件的路径和策略
+    -- path 用家目录相对的 ~/git（任何用户都成立，非机器特定的绝对路径）；
+    -- fallback = true 兜底：本地没有对应目录时自动回退到从 git 拉取，不会报错。
     dev = {
         path = "~/git",
         fallback = true,
@@ -65,11 +67,11 @@ require("lazy").setup({
         },
     },
     change_detection = {
-        enabled = true, -- automatically check for config file changes and reload the ui
-        notify = false, -- turn off notifications whenever plugin changes are made
+        enabled = true, -- 自动检测配置文件变更并重新加载界面
+        notify = false, -- 插件变更时不弹出通知
     },
 })
--- These modules are not loaded by lazy
+-- 以下模块不经 lazy 加载，直接 require
 require("core.options")
 require("core.keymaps")
 require("core.autocmds")

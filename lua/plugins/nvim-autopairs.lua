@@ -1,13 +1,13 @@
--- Auto-completion of bracket/paren/quote pairs
+-- 自动补全括号 / 引号等成对符号
 return {
   -- https://github.com/windwp/nvim-autopairs
   'windwp/nvim-autopairs',
   event = "InsertEnter",
   opts = {
-    check_ts = true, -- enable treesitter
+    check_ts = true, -- 启用 treesitter 判断上下文
     ts_config = {
-      lua = { "string" }, -- don't add pairs in lua string treesitter nodes
-      javascript = { "template_string" }, -- don't add pairs in javascript template_string
+      lua = { "string" }, -- 在 lua 字符串节点内不自动补全成对符号
+      javascript = { "template_string" }, -- 在 javascript 模板字符串内不自动补全成对符号
     }
   }
 }

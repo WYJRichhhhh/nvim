@@ -2,7 +2,7 @@ local autocmd = vim.api.nvim_create_autocmd
 local augroup = vim.api.nvim_create_augroup
 local utils = require("core.utils")
 
--- General Settings
+-- 通用设置
 local general = augroup("General Settings", { clear = true })
 
 -- 自动设置 cwd 为打开文件或目录的路径,解决使用 telescope时 搜索路径不断变化导致项目级别搜索困难的问题

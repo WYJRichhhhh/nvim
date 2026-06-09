@@ -4,51 +4,51 @@ return {
     config = function()
         require("noice").setup({
             cmdline = {
-                enabled = true, -- enables the Noice cmdline UI
-                view = "cmdline_popup", -- view for rendering the cmdline. Change to `cmdline` to get a classic cmdline at the bottom
-                opts = {}, -- global options for the cmdline. See section on views
+                enabled = true, -- 启用 Noice 的 cmdline UI
+                view = "cmdline_popup", -- 渲染 cmdline 的视图。改成 `cmdline` 可回到底部的经典命令行
+                opts = {}, -- cmdline 的全局选项，详见 views 一节
                 format = {
-                    -- conceal: (default=true) This will hide the text in the cmdline that matches the pattern.
-                    -- view: (default is cmdline view)
-                    -- opts: any options passed to the view
-                    -- icon_hl_group: optional hl_group for the icon
-                    -- title: set to anything or empty string to hide
+                    -- conceal:（默认 true）隐藏 cmdline 中匹配该 pattern 的文本
+                    -- view:（默认是 cmdline 视图）
+                    -- opts: 传给视图的任意选项
+                    -- icon_hl_group: 图标可选的 hl_group
+                    -- title: 设为任意值或空字符串即可隐藏
                     cmdline = { pattern = "^:", icon = "", lang = "vim" },
                     search_down = { kind = "search", pattern = "^/", icon = "󰱼 ", lang = "regex" },
                     search_up = { kind = "search", pattern = "^%?", icon = "󰱼 ", lang = "regex" },
                     filter = { pattern = "^:%s*!", icon = "$", lang = "bash" },
                     lua = { pattern = { "^:%s*lua%s+", "^:%s*lua%s*=%s*", "^:%s*=%s*" }, icon = "", lang = "lua" },
                     help = { pattern = "^:%s*he?l?p?%s+", icon = "" },
-                    input = {}, -- Used by input()
+                    input = {}, -- 供 input() 使用
                     -- lua = false, -- to disable a format, set to `false`
                 },
             },
             messages = {
-                -- NOTE: If you enable messages, then the cmdline is enabled automatically.
-                -- This is a current Neovim limitation.
-                enabled = true, -- enables the Noice messages UI
-                view = "notify", -- default view for messages
-                view_error = "notify", -- view for errors
-                view_warn = "notify", -- view for warnings
-                view_history = "messages", -- view for :messages
-                view_search = "virtualtext", -- view for search count messages. Set to `false` to disable
+                -- 注意：启用 messages 后 cmdline 会被自动启用，
+                -- 这是当前 Neovim 的限制。
+                enabled = true, -- 启用 Noice 的 messages UI
+                view = "notify", -- 消息的默认视图
+                view_error = "notify", -- 错误的视图
+                view_warn = "notify", -- 警告的视图
+                view_history = "messages", -- :messages 的视图
+                view_search = "virtualtext", -- 搜索计数消息的视图。设为 `false` 可禁用
             },
             popupmenu = {
-                enabled = true, -- enables the Noice popupmenu UI
-                backend = "nui", -- backend to use to show regular cmdline completions
-                -- Icons for completion item kinds (see defaults at noice.config.icons.kinds)
-                kind_icons = {}, -- set to `false` to disable icons
+                enabled = true, -- 启用 Noice 的 popupmenu UI
+                backend = "nui", -- 显示常规 cmdline 补全所用的后端
+                -- 补全项类型的图标（默认值见 noice.config.icons.kinds）
+                kind_icons = {}, -- 设为 `false` 可禁用图标
             },
-            -- default options for require('noice').redirect
-            -- see the section on Command Redirection
+            -- require('noice').redirect 的默认选项
+            -- 详见 Command Redirection 一节
             redirect = {
                 view = "popup",
                 filter = { event = "msg_show" },
             },
-            -- You can add any custom commands below that will be available with `:Noice command`
+            -- 下面可添加任意自定义命令，通过 `:Noice command` 调用
             commands = {
                 history = {
-                    -- options for the message history that you get with `:Noice`
+                    -- `:Noice` 打开的消息历史的选项
                     view = "split",
                     opts = { enter = true, format = "details" },
                     filter = {
@@ -80,7 +80,7 @@ return {
                 },
                 -- :Noice errors
                 errors = {
-                    -- options for the message history that you get with `:Noice`
+                    -- `:Noice` 打开的消息历史的选项
                     view = "popup",
                     opts = { enter = true, format = "details" },
                     filter = { error = true },
@@ -95,56 +95,56 @@ return {
                 },
             },
             notify = {
-                -- Noice can be used as `vim.notify` so you can route any notification like other messages
-                -- Notification messages have their level and other properties set.
-                -- event is always "notify" and kind can be any log level as a string
-                -- The default routes will forward notifications to nvim-notify
-                -- Benefit of using Noice for this is the routing and consistent history view
+                -- Noice 可以充当 `vim.notify`，从而像其它消息一样路由任意通知。
+                -- 通知消息会带有 level 等属性，event 恒为 "notify"，
+                -- kind 可以是任意日志等级的字符串。
+                -- 默认路由会把通知转发给 nvim-notify。
+                -- 用 Noice 接管的好处是路由统一、历史视图一致。
                 enabled = true,
                 view = "notify",
             },
             lsp = {
                 progress = {
                     enabled = false,
-                    -- Lsp Progress is formatted using the builtins for lsp_progress. See config.format.builtin
-                    -- See the section on formatting for more details on how to customize.
+                    -- LSP 进度用 lsp_progress 内置 formatter 格式化，详见 config.format.builtin。
+                    -- 自定义格式的更多说明见 formatting 一节。
                     format = "lsp_progress",
                     format_done = "lsp_progress_done",
-                    throttle = 1000 / 30, -- frequency to update lsp progress message
+                    throttle = 1000 / 30, -- 更新 LSP 进度消息的频率
                     view = "mini",
                 },
                 override = {
-                    -- override the default lsp markdown formatter with Noice
+                    -- 用 Noice 覆盖默认的 LSP markdown formatter
                     ["vim.lsp.util.convert_input_to_markdown_lines"] = false,
-                    -- override the lsp markdown formatter with Noice
+                    -- 用 Noice 覆盖 LSP markdown formatter
                     ["vim.lsp.util.stylize_markdown"] = false,
-                    -- override cmp documentation with Noice (needs the other options to work)
+                    -- 用 Noice 覆盖 cmp 文档（需要上面几项一起开启才生效）
                     ["cmp.entry.get_documentation"] = false,
                 },
                 hover = {
                     enabled = false,
-                    silent = false, -- set to true to not show a message if hover is not available
-                    view = nil, -- when nil, use defaults from documentation
-                    opts = {}, -- merged with defaults from documentation
+                    silent = false, -- 设为 true 时，hover 不可用也不提示消息
+                    view = nil, -- 为 nil 时使用 documentation 的默认值
+                    opts = {}, -- 与 documentation 的默认值合并
                 },
                 signature = {
                     enabled = false,
                     auto_open = {
                         enabled = true,
-                        trigger = true, -- Automatically show signature help when typing a trigger character from the LSP
-                        luasnip = true, -- Will open signature help when jumping to Luasnip insert nodes
-                        throttle = 50, -- Debounce lsp signature help request by 50ms
+                        trigger = true, -- 输入 LSP 的触发字符时自动弹出签名帮助
+                        luasnip = true, -- 跳到 Luasnip 插入节点时弹出签名帮助
+                        throttle = 50, -- LSP 签名帮助请求去抖 50ms
                     },
-                    view = nil, -- when nil, use defaults from documentation
-                    opts = {}, -- merged with defaults from documentation
+                    view = nil, -- 为 nil 时使用 documentation 的默认值
+                    opts = {}, -- 与 documentation 的默认值合并
                 },
                 message = {
-                    -- Messages shown by lsp servers
+                    -- LSP 服务器显示的消息
                     enabled = true,
                     view = "notify",
                     opts = {},
                 },
-                -- defaults for hover and signature help
+                -- hover 和签名帮助的默认值
                 documentation = {
                     view = "hover",
                     opts = {
@@ -158,8 +158,8 @@ return {
             },
             markdown = {
                 hover = {
-                    ["|(%S-)|"] = vim.cmd.help, -- vim help links
-                    ["%[.-%]%((%S-)%)"] = require("noice.util").open, -- markdown links
+                    ["|(%S-)|"] = vim.cmd.help, -- vim 帮助链接
+                    ["%[.-%]%((%S-)%)"] = require("noice.util").open, -- markdown 链接
                 },
                 highlights = {
                     ["|%S-|"] = "@text.reference",
@@ -171,24 +171,24 @@ return {
                 },
             },
             health = {
-                checker = true, -- Disable if you don't want health checks to run
+                checker = true, -- 不想跑健康检查就禁用它
             },
             smart_move = {
-                -- noice tries to move out of the way of existing floating windows.
-                enabled = true, -- you can disable this behaviour here
-                -- add any filetypes here, that shouldn't trigger smart move.
+                -- noice 会尝试避开已有的浮动窗口。
+                enabled = true, -- 可在此关闭该行为
+                -- 在这里加入不应触发 smart move 的 filetype。
                 excluded_filetypes = { "cmp_menu", "cmp_docs", "notify" },
             },
             presets = {
-                -- you can enable a preset by setting it to true, or a table that will override the preset config
-                -- you can also add custom presets that you can enable/disable with enabled=true
-                bottom_search = false, -- use a classic bottom cmdline for search
-                command_palette = false, -- position the cmdline and popupmenu together
-                long_message_to_split = false, -- long messages will be sent to a split
-                inc_rename = false, -- enables an input dialog for inc-rename.nvim
-                lsp_doc_border = false, -- add a border to hover docs and signature help
+                -- 把某个 preset 设为 true 即可启用，也可设为一个表来覆盖该 preset 的配置；
+                -- 还可以添加自定义 preset，通过 enabled=true 来开关。
+                bottom_search = false, -- 搜索时使用经典的底部命令行
+                command_palette = false, -- 把 cmdline 和 popupmenu 放在一起
+                long_message_to_split = false, -- 长消息发送到 split 窗口
+                inc_rename = false, -- 为 inc-rename.nvim 启用输入对话框
+                lsp_doc_border = false, -- 给 hover 文档和签名帮助加边框
             },
-            throttle = 1000 / 30, -- how frequently does Noice need to check for ui updates? This has no effect when in blocking mode.
+            throttle = 1000 / 30, -- Noice 检查 UI 更新的频率。阻塞模式下此项无效。
             views = {
                 -- 配置popup视图
                 popup = {

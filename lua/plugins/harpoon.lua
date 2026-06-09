@@ -1,4 +1,4 @@
--- List of favorite files/marks per project
+-- 按项目维护一份常用文件/标记清单，便于快速跳转
 return {
   -- https://github.com/ThePrimeagen/harpoon
   'ThePrimeagen/harpoon',

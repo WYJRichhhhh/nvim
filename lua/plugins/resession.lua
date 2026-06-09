@@ -7,9 +7,9 @@ return {
         resession.setup({})
         vim.api.nvim_create_autocmd("VimEnter", {
             callback = function()
-                -- Only load the session if nvim was started with no args
+                -- 仅在不带任何参数启动 nvim 时才自动加载会话
                 if vim.fn.argc(-1) == 0 then
-                    -- Save these to a different directory, so our manual sessions don't get polluted
+                    -- 存到以 cwd 命名的另一处目录，避免污染手动保存的会话
                     resession.load(vim.fn.getcwd(), { silence_errors = true })
                 end
             end,

@@ -1,12 +1,12 @@
--- Theme/Colorscheme (uncomment section for whichever theme you prefer or use your own)
--- Kanagawa Theme (Custom Palette)
+-- 主题 / 配色（按需取消注释你偏好的那段，或换成自己的）
+-- Kanagawa 主题（自定义调色板）
 return {
     -- https://github.com/rebelot/kanagawa.nvim
-    "rebelot/kanagawa.nvim", -- You can replace this with your favorite colorscheme
-    lazy = false, -- We want the colorscheme to load immediately when starting Neovim
-    priority = 1000, -- Load the colorscheme before other non-lazy-loaded plugins
+    "rebelot/kanagawa.nvim", -- 可替换成你喜欢的配色方案
+    lazy = false, -- 希望配色在启动 Neovim 时立即加载
+    priority = 1000, -- 比其它非懒加载插件更早加载配色
     opts = {
-        -- Replace this with your scheme-specific settings or remove to use the defaults
+        -- 替换成你的配色专属设置，或删掉以使用默认值
         -- transparent = true,
         background = {
             -- light = "lotus",
@@ -14,64 +14,64 @@ return {
         },
         colors = {
             palette = {
-                -- Background colors
-                sumiInk0 = "#161616", -- modified
-                sumiInk1 = "#181818", -- modified
-                sumiInk2 = "#1a1a1a", -- modified
-                sumiInk3 = "#1F1F1F", -- modified
-                sumiInk4 = "#2A2A2A", -- modified
-                sumiInk5 = "#363636", -- modified
-                sumiInk6 = "#545454", -- modified
+                -- 背景色
+                sumiInk0 = "#161616", -- 已修改
+                sumiInk1 = "#181818", -- 已修改
+                sumiInk2 = "#1a1a1a", -- 已修改
+                sumiInk3 = "#1F1F1F", -- 已修改
+                sumiInk4 = "#2A2A2A", -- 已修改
+                sumiInk5 = "#363636", -- 已修改
+                sumiInk6 = "#545454", -- 已修改
 
-                -- Popup and Floats
-                waveBlue1 = "#322C47", -- modified
-                waveBlue2 = "#4c4464", -- modified
+                -- 弹窗与浮动窗口
+                waveBlue1 = "#322C47", -- 已修改
+                waveBlue2 = "#4c4464", -- 已修改
 
-                -- Diff and Git
+                -- Diff 与 Git
                 winterGreen = "#2B3328",
                 winterYellow = "#49443C",
                 winterRed = "#43242B",
                 winterBlue = "#252535",
-                autumnGreen = "#76A56A", -- modified
+                autumnGreen = "#76A56A", -- 已修改
                 autumnRed = "#C34043",
                 autumnYellow = "#DCA561",
 
-                -- Diag
+                -- 诊断
                 samuraiRed = "#E82424",
                 roninYellow = "#FF9E3B",
-                waveAqua1 = "#7E9CD8", -- modified
-                dragonBlue = "#7FB4CA", -- modified
+                waveAqua1 = "#7E9CD8", -- 已修改
+                dragonBlue = "#7FB4CA", -- 已修改
 
-                -- Foreground and Comments
+                -- 前景色与注释
                 oldWhite = "#C8C093",
-                fujiWhite = "#F9E7C0", -- modified
+                fujiWhite = "#F9E7C0", -- 已修改
                 fujiGray = "#727169",
-                oniViolet = "#BFA3E6", -- modified
-                oniViolet2 = "#BCACDB", -- modified
-                crystalBlue = "#8CABFF", -- modified
+                oniViolet = "#BFA3E6", -- 已修改
+                oniViolet2 = "#BCACDB", -- 已修改
+                crystalBlue = "#8CABFF", -- 已修改
                 springViolet1 = "#938AA9",
                 springViolet2 = "#9CABCA",
-                springBlue = "#7FC4EF", -- modified
-                waveAqua2 = "#77BBDD", -- modified
+                springBlue = "#7FC4EF", -- 已修改
+                waveAqua2 = "#77BBDD", -- 已修改
 
                 springGreen = "#98BB6C",
                 boatYellow1 = "#938056",
                 boatYellow2 = "#C0A36E",
-                carpYellow = "#FFEE99", -- modified
+                carpYellow = "#FFEE99", -- 已修改
 
                 sakuraPink = "#D27E99",
                 waveRed = "#E46876",
                 peachRed = "#FF5D62",
-                surimiOrange = "#FFAA44", -- modified
+                surimiOrange = "#FFAA44", -- 已修改
                 katanaGray = "#717C7C",
             },
         },
     },
     config = function(_, opts)
-        require("kanagawa").setup(opts) -- Replace this with your favorite colorscheme
-        vim.cmd("colorscheme kanagawa") -- Replace this with your favorite colorscheme
+        require("kanagawa").setup(opts) -- 可替换成你喜欢的配色方案
+        vim.cmd("colorscheme kanagawa") -- 可替换成你喜欢的配色方案
 
-        -- Custom diff colors
+        -- 自定义 diff 颜色
         vim.cmd([[
       autocmd VimEnter * hi DiffAdd guifg=#00FF00 guibg=#005500
       autocmd VimEnter * hi DiffDelete guifg=#FF0000 guibg=#550000
@@ -79,7 +79,7 @@ return {
       autocmd VimEnter * hi DiffText guifg=#00FF00 guibg=#005500
     ]])
 
-        -- Custom border colors
+        -- 自定义边框颜色
         vim.cmd([[
       autocmd ColorScheme * hi NormalFloat guifg=#F9E7C0 guibg=#1F1F1F
       autocmd ColorScheme * hi FloatBorder guifg=#F9E7C0 guibg=#1F1F1F

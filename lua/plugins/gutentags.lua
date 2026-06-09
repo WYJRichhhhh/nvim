@@ -28,24 +28,23 @@ return {
       vim.g.gutentags_generate_on_missing = true
       vim.g.gutentags_generate_on_write = true
       
-      -- 设置标签文件位置
-      vim.g.gutentags_ctags_tagfile = ".tags"
-      
-      -- 设置缓存目录
-      vim.g.gutentags_cache_dir = vim.fn.expand("~/.cache/nvim/ctags/")
-      
-      -- 确保缓存目录存在
-      vim.fn.mkdir(vim.g.gutentags_cache_dir, "p")
-      
-      -- 设置调试信息
-      vim.g.gutentags_debug = false
-      
-      -- 设置自动加载标签
-      vim.g.gutentags_auto_add_gtags_cscope = 0
-      
-      -- 设置标签生成命令
+      -- 设置标签文件位置 + 生成后处理命令（统一在此一处配，别散落）
       vim.g.gutentags_ctags_tagfile = ".tags"
       vim.g.gutentags_ctags_postprocess_cmd = "ctags --sort=yes --fields=+l"
+
+      -- 设置缓存目录
+      -- 用 stdpath("cache") 而非写死 ~/.cache/nvim：缓存目录在不同 OS 上位置不同
+      -- （Linux 走 XDG、macOS 也可能被 $XDG_CACHE_HOME 改写），交给 nvim 自己解析。
+      vim.g.gutentags_cache_dir = vim.fn.stdpath("cache") .. "/ctags/"
+
+      -- 确保缓存目录存在
+      vim.fn.mkdir(vim.g.gutentags_cache_dir, "p")
+
+      -- 设置调试信息
+      vim.g.gutentags_debug = false
+
+      -- 设置自动加载标签
+      vim.g.gutentags_auto_add_gtags_cscope = 0
       
       -- 设置快捷键
       -- 注：用 <leader>gtu 而非 <leader>gt，避免与 git-tools.lua 的

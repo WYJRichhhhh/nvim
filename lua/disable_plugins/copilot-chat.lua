@@ -4,7 +4,7 @@ return {
   branch = "canary",
   cmd = "CopilotChat",
   config = function()
-    -- TODO: add blink.cmp integration when/if it's available
+    -- TODO: 等 blink.cmp 集成可用后再接入
     -- require("CopilotChat.integrations.cmp").setup()
     vim.api.nvim_create_autocmd("BufEnter", {
       pattern = "copilot-chat",

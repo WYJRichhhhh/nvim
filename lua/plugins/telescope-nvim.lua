@@ -1,4 +1,4 @@
--- Fuzzy finder
+-- 模糊查找器
 return {
     -- https://github.com/nvim-telescope/telescope.nvim
     "nvim-telescope/telescope.nvim",

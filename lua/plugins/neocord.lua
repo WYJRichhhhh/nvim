@@ -19,7 +19,7 @@ return {
 
                 local git_origin = vim.system({ "git", "config", "--get", "remote.origin.url" }):wait()
 
-                -- Only display projects that I personally own or have forked, otherwise assume it's not something I want to share
+                -- 只展示自己拥有或 fork 的项目，否则视为不便公开的内容
                 if string.find(git_origin.stdout, "scottmckendry") ~= nil then
                     return "Working on " .. project_name:gsub("%a", string.upper, 1) .. " 🚀"
                 end
