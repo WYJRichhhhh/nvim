@@ -70,31 +70,10 @@ return {
         -- 直接 require 子模块，不会触发 lspconfig 框架的废弃告警。
         require("lspconfig.ui.windows").default_options.border = "rounded"
 
-        -- 设置LSP快捷键
-        vim.api.nvim_create_autocmd("LspAttach", {
-            group = vim.api.nvim_create_augroup("UserLspConfig", {}),
-            callback = function(ev)
-                -- 跳转到实现
-                vim.keymap.set("n", "gi", function()
-                    vim.lsp.buf.implementation()
-                end, { buffer = ev.buf, desc = "跳转到实现" })
-
-                -- 跳转到定义
-                vim.keymap.set("n", "gd", function()
-                    vim.lsp.buf.definition()
-                end, { buffer = ev.buf, desc = "跳转到定义" })
-
-                -- 跳转到类型定义
-                vim.keymap.set("n", "gt", function()
-                    vim.lsp.buf.type_definition()
-                end, { buffer = ev.buf, desc = "跳转到类型定义" })
-
-                -- 跳转到引用
-                vim.keymap.set("n", "gr", function()
-                    vim.lsp.buf.references()
-                end, { buffer = ev.buf, desc = "跳转到引用" })
-            end,
-        })
+        -- LSP 跳转键 gd/gi/gt/gr 统一在 core/keymaps.lua 全局定义。
+        -- 这里原先用 LspAttach 又定义了一份 buffer 局部映射，会覆盖全局版，
+        -- 还把 gr 改回原生 references（与全局选用的 telescope.lsp_references 相悖），
+        -- 属冗余且有害，故移除。
 
         -- 无需额外配置的 LSP 服务器：直接用 lsp/<name>.lua 里的默认配置即可，
         -- 这里不需要 vim.lsp.config 覆盖，只要在最后 enable 它们。

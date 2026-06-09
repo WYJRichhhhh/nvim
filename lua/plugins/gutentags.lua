@@ -48,7 +48,9 @@ return {
       vim.g.gutentags_ctags_postprocess_cmd = "ctags --sort=yes --fields=+l"
       
       -- 设置快捷键
-      vim.keymap.set("n", "<leader>gt", ":GutentagsUpdate<CR>", { desc = "更新标签" })
+      -- 注：用 <leader>gtu 而非 <leader>gt，避免与 git-tools.lua 的
+      -- <leader>gtb / <leader>gtd（切换 blame/deleted）形成「完整映射兼前缀」冲突。
+      vim.keymap.set("n", "<leader>gtu", ":GutentagsUpdate<CR>", { desc = "更新标签" })
       vim.keymap.set("n", "<leader>gT", ":GutentagsToggleEnabled<CR>", { desc = "切换标签生成" })
     end,
   },

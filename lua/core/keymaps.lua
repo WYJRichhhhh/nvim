@@ -14,7 +14,7 @@ keymap.set("i", "<C-e>", "<End>", { desc = "行尾" }) -- go to end
 keymap.set("i", "<C-h>", "<Left>", { desc = "光标左移" }) -- move left
 keymap.set("i", "<C-l>", "<Right>", { desc = "光标右移" }) -- move right
 keymap.set("i", "<C-j>", "<Down>", { desc = "光标下移" }) -- move down
-keymap.set("i", "<C-k>", "<Up>", { desc = "贯标上移" }) -- move up
+keymap.set("i", "<C-k>", "<Up>", { desc = "光标上移" }) -- move up
 keymap.set("n", "<leader>wq", ":wq<CR>", { desc = "保存并退出" }) -- save and quit
 keymap.set("n", "<leader>wa", ":wa<CR>", { desc = "保存全部" }) -- save all
 keymap.set("n", "<leader>qq", ":q!<CR>", { desc = "退出不保存" }) -- quit without saving
@@ -27,7 +27,7 @@ keymap.set("n", "gx", function()
     vim.fn.jobstart({ opener, url }, { detach = true })
 end, { desc = "用系统默认程序打开光标下的 url" }) -- open URL under cursor
 keymap.set("n", "q", "<cmd> noh <CR>", { desc = "清除高亮" }) -- clear highlights
-keymap.set("n", "<leader>\\w", "<cmd>set wrap!<CR>", { desc = "清除自动换行" }) -- clear highlights
+keymap.set("n", "<leader>\\w", "<cmd>set wrap!<CR>", { desc = "切换自动换行" }) -- toggle line wrap
 keymap.set("n", "<leader>sv", "<C-w>v", { desc = "垂直分割窗口" }) -- split window vertically
 keymap.set("n", "<leader>sh", "<C-w>s", { desc = "水平分割窗口" }) -- split window horizontally
 keymap.set("n", "<leader>se", "<C-w>=", { desc = "分割窗口等宽" }) -- make split windows equal width
@@ -42,11 +42,11 @@ keymap.set("n", "<C-k>", "<C-w>k", { desc = "光标移动到上侧窗口" }) -- 
 keymap.set("n", "<C-l>", "<C-w>l", { desc = "光标移动到右侧窗口" }) -- 向右移动
 
 -- Diff keymaps
-keymap.set("n", "<leader>cc", ":diffput<CR>", { desc = "unuse" }) -- put diff from current to other during diff
-keymap.set("n", "<leader>cj", ":diffget 1<CR>", { desc = "unuse" }) -- get diff from left (local) during merge
-keymap.set("n", "<leader>ck", ":diffget 3<CR>", { desc = "unuse" }) -- get diff from right (remote) during merge
-keymap.set("n", "<leader>cn", "]c", { desc = "unuse" }) -- next diff hunk
-keymap.set("n", "<leader>cp", "[c", { desc = "unuse" }) -- previous diff hunk
+keymap.set("n", "<leader>cc", ":diffput<CR>", { desc = "diff: 推送当前更改到对方" }) -- put diff from current to other during diff
+keymap.set("n", "<leader>cj", ":diffget 1<CR>", { desc = "diff: 采用左侧(本地)更改" }) -- get diff from left (local) during merge
+keymap.set("n", "<leader>ck", ":diffget 3<CR>", { desc = "diff: 采用右侧(远端)更改" }) -- get diff from right (remote) during merge
+keymap.set("n", "<leader>cn", "]c", { desc = "diff: 下一处差异" }) -- next diff hunk
+keymap.set("n", "<leader>cp", "[c", { desc = "diff: 上一处差异" }) -- previous diff hunk
 
 -- Vim-maximizer
 keymap.set("n", "<leader>sm", ":MaximizerToggle<CR>", { desc = "toggle最大化当前窗口" }) -- toggle maximize tab
@@ -355,28 +355,16 @@ keymap.set({ "n", "v" }, "f", function()
 end, { desc = "行内单字符向前跳转" })
 keymap.set({ "n", "v" }, "F", function()
     vim.cmd("HopChar1CurrentLineBC")
-end, { desc = "行内单字符后前跳转" })
+end, { desc = "行内单字符向后跳转" })
 
 keymap.set({ "n", "v" }, "t", function()
     vim.cmd("HopChar1CurrentLineAC")
 end, { desc = "行内单字符向前跳转" })
 keymap.set({ "n", "v" }, "T", function()
     vim.cmd("HopChar1CurrentLineBC")
-end, { desc = "行内单字符后前跳转" })
+end, { desc = "行内单字符向后跳转" })
 
--- copilot-chat
-keymap.set({ "n", "v" }, "<leader>cp", function()
-    return require("CopilotChat").toggle()
-end, { desc = "切换CopilotChat" })
-keymap.set({ "n", "v" }, "<leader>cx", function()
-    return require("CopilotChat").reset()
-end, { desc = "重置CopilotChat" })
-keymap.set({ "n", "v" }, "<leader>cq", function()
-    local input = vim.fn.input("Quick Chat: ")
-    if input ~= "" then
-        require("CopilotChat").ask(input)
-    end
-end, { desc = "快速聊天" })
+-- copilot-chat（CopilotChat 插件已停用，见 disable_plugins/，相关快捷键随之移除）
 
 -- Buffers
 -- stylua: ignore start
@@ -401,42 +389,10 @@ function RevealInMiniFiles()
   require("mini.files").open(path)    -- 在 mini.files 中打开该目录
 end
 
--- Python相关快捷键
--- 环境管理
-keymap.set("n", "<leader>oi", ":Autoflake<CR>", { desc = "移除未使用的导入" })
-
--- 调试相关
-keymap.set("n", "<leader>bb", function() require("dap").toggle_breakpoint() end, { desc = "调试: 切换断点" })
-keymap.set("n", "<leader>eb", function() require("dap").set_breakpoint(vim.fn.input("Breakpoint condition: ")) end, { desc = "调试: 编辑断点" })
-keymap.set("n", "<leader>dc", function() require("dap").continue() end, { desc = "调试: 继续" })
-keymap.set("n", "<leader>do", function() require("dap").step_over() end, { desc = "调试: 单步跳过" })
-keymap.set("n", "<leader>di", function() require("dap").step_into() end, { desc = "调试: 单步进入" })
-keymap.set("n", "<leader>dr", function() require("dap").repl.open() end, { desc = "调试: 打开REPL" })
-keymap.set("n", "<leader>dx", function() require("dap").terminate() end, { desc = "调试: 终止" })
-keymap.set("n", "<leader>raB", function() require("dap").clear_breakpoints() end, { desc = "调试: 清除所有断点" })
-keymap.set("n", "<leader>pp", function() 
-  local status, err = pcall(function()
-    require("dapui").toggle()
-  end)
-  if not status then
-    vim.notify("无法切换调试界面: " .. tostring(err), vim.log.levels.WARN)
-    -- 尝试重新打开 UI
-    vim.defer_fn(function()
-      pcall(function() require("dapui").open() end)
-    end, 100)
-  end
-end, { desc = "调试: 显示执行点" })
-keymap.set("n", "<leader>fr", function() require("dap").run_last() end, { desc = "调试: 强制返回" })
-keymap.set("n", "<leader>dS", function() require("telescope").extensions.dap.frames() end, { desc = "调试: 显示帧" })
-keymap.set("n", "<leader>di", function() require("telescope").extensions.dap.list_breakpoints() end, { desc = "调试: 列出断点" })
-keymap.set("n", "<leader>dS", function() require("telescope").extensions.dap.variables() end, { desc = "调试: 显示变量" })
+-- 调试: DAP UI widgets（上面 Debugging 段未覆盖的补充键）
 keymap.set("n", "<leader>dh", function() require("dap.ui.widgets").hover() end, { desc = "调试: 悬停显示" })
 keymap.set("n", "<leader>d?", function() require("dap.ui.widgets").preview() end, { desc = "调试: 预览" })
-keymap.set("n", "<leader>dc", function() require("dap.ui.widgets").centered_float(require("dap.ui.widgets").scopes) end, { desc = "调试: 显示作用域" })
 
--- 重构相关
-keymap.set("v", "<leader>em", function() require("refactoring").refactor("Extract Function") end, { desc = "重构: 提取方法" })
-keymap.set("v", "<leader>ev", function() require("refactoring").refactor("Extract Variable") end, { desc = "重构: 提取变量" })
-keymap.set("n", "<leader>ri", function() require("refactoring").refactor("Inline Variable") end, { desc = "重构: 内联变量" })
+-- 重构：基于原生 LSP（refactoring.nvim 插件已停用，提取方法/变量/内联三项随之移除）
 keymap.set("n", "<leader>re", function() vim.lsp.buf.rename() end, { desc = "重构: 重命名" })
 keymap.set("n", "<leader>mv", function() vim.lsp.buf.code_action({ context = { only = { "refactor.move" } } }) end, { desc = "重构: 移动" })
