@@ -79,7 +79,7 @@ return {
         -- 这里不需要 vim.lsp.config 覆盖，只要在最后 enable 它们。
         -- （docker/templ/solargraph 等保持原样注释停用。）
 
-        -- Go
+        -- Go ------------------------------------------------------------------
         vim.lsp.config("gopls", {
             settings = {
                 gopls = {
@@ -92,14 +92,15 @@ return {
             },
         })
 
-        -- Bicep Azure 资源语言
+        -- Bicep ---------------------------------------------------------------
+        -- Azure 资源语言。
         -- lsp/bicep.lua 默认不带 cmd（nvim-lspconfig 不假设你的 PATH），必须显式给出。
         local bicep_path = vim.fn.stdpath("data") .. "/mason/packages/bicep-lsp/bicep-lsp"
         vim.lsp.config("bicep", {
             cmd = { bicep_path },
         })
 
-        -- Lua
+        -- Lua -----------------------------------------------------------------
         -- 注意：lsp/lua_ls.lua 默认没有 on_init，这里属于纯新增，不会覆盖内置钩子。
         vim.lsp.config("lua_ls", {
             on_init = function(client)
@@ -227,7 +228,7 @@ return {
             end,
         })
 
-        -- Rust
+        -- Rust ----------------------------------------------------------------
         -- 只覆盖 settings：lsp/rust_analyzer.lua 自带 before_init（把 settings 同步进
         -- init_options、提供 runnables 等），不要覆盖它。
         vim.lsp.config("rust_analyzer", {

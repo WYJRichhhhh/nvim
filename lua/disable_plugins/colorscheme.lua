@@ -87,14 +87,14 @@ return {
     end,
 }
 
--- Kanagawa Theme (Original)
+-- Kanagawa 主题（原版）
 -- return {
 --   -- https://github.com/rebelot/kanagawa.nvim
---   'rebelot/kanagawa.nvim', -- You can replace this with your favorite colorscheme
---   lazy = false, -- We want the colorscheme to load immediately when starting Neovim
---   priority = 1000, -- Load the colorscheme before other non-lazy-loaded plugins
+--   'rebelot/kanagawa.nvim', -- 可替换成你喜欢的配色方案
+--   lazy = false, -- 希望配色在启动 Neovim 时立即加载
+--   priority = 1000, -- 比其它非懒加载插件更早加载配色
 --   opts = {
---     -- Replace this with your scheme-specific settings or remove to use the defaults
+--     -- 替换成你的配色专属设置，或删掉以使用默认值
 --     -- transparent = true,
 --     background = {
 --       -- light = "lotus",
@@ -102,65 +102,65 @@ return {
 --     },
 --   },
 --   config = function(_, opts)
---     require('kanagawa').setup(opts) -- Replace this with your favorite colorscheme
---     vim.cmd("colorscheme kanagawa") -- Replace this with your favorite colorscheme
+--     require('kanagawa').setup(opts) -- 可替换成你喜欢的配色方案
+--     vim.cmd("colorscheme kanagawa") -- 可替换成你喜欢的配色方案
 --   end
 -- }
 
--- Tokyo Night Theme
+-- Tokyo Night 主题
 -- return {
 --   -- https://github.com/folke/tokyonight.nvim
---   'folke/tokyonight.nvim', -- You can replace this with your favorite colorscheme
---   lazy = false, -- We want the colorscheme to load immediately when starting Neovim
---   priority = 1000, -- Load the colorscheme before other non-lazy-loaded plugins
+--   'folke/tokyonight.nvim', -- 可替换成你喜欢的配色方案
+--   lazy = false, -- 希望配色在启动 Neovim 时立即加载
+--   priority = 1000, -- 比其它非懒加载插件更早加载配色
 --   opts = {
---     -- Replace this with your scheme-specific settings or remove to use the defaults
+--     -- 替换成你的配色专属设置，或删掉以使用默认值
 --     -- transparent = true,
---     style = "night", -- other variations "storm, night, moon, day"
+--     style = "night", -- 其它可选值 "storm, night, moon, day"
 --   },
 --   config = function(_, opts)
---     require('tokyonight').setup(opts) -- Replace this with your favorite colorscheme
---     vim.cmd("colorscheme tokyonight") -- Replace this with your favorite colorscheme
+--     require('tokyonight').setup(opts) -- 可替换成你喜欢的配色方案
+--     vim.cmd("colorscheme tokyonight") -- 可替换成你喜欢的配色方案
 --   end
 -- }
 
--- Catppuccin Theme
+-- Catppuccin 主题
 -- return {
 --   -- https://github.com/catppuccin/nvim
 --   'catppuccin/nvim',
---   name = "catppuccin", -- name is needed otherwise plugin shows up as "nvim" due to github URI
---   lazy = false, -- We want the colorscheme to load immediately when starting Neovim
---   priority = 1000, -- Load the colorscheme before other non-lazy-loaded plugins
+--   name = "catppuccin", -- 必须指定 name，否则受 github URI 影响插件名会显示为 "nvim"
+--   lazy = false, -- 希望配色在启动 Neovim 时立即加载
+--   priority = 1000, -- 比其它非懒加载插件更早加载配色
 --   opts = {
---   --   -- Replace this with your scheme-specific settings or remove to use the defaults
+--   --   -- 替换成你的配色专属设置，或删掉以使用默认值
 --     -- transparent = true,
 --     flavour = "mocha", -- "latte, frappe, macchiato, mocha"
 --   },
 --   config = function(_, opts)
---     require('catppuccin').setup(opts) -- Replace this with your favorite colorscheme
---     vim.cmd("colorscheme catppuccin") -- Replace this with your favorite colorscheme
+--     require('catppuccin').setup(opts) -- 可替换成你喜欢的配色方案
+--     vim.cmd("colorscheme catppuccin") -- 可替换成你喜欢的配色方案
 --   end
 -- }
 
--- Sonokai Theme
+-- Sonokai 主题
 -- return {
 --   -- https://github.com/sainnhe/sonokai
 --   'sainnhe/sonokai',
---   lazy = false, -- We want the colorscheme to load immediately when starting Neovim
---   priority = 1000, -- Load the colorscheme before other non-lazy-loaded plugins
+--   lazy = false, -- 希望配色在启动 Neovim 时立即加载
+--   priority = 1000, -- 比其它非懒加载插件更早加载配色
 --   config = function(_, opts)
 --     vim.g.sonokai_style = "default" -- "default, atlantis, andromeda, shusia, maia, espresso"
---     vim.cmd("colorscheme sonokai") -- Replace this with your favorite colorscheme
+--     vim.cmd("colorscheme sonokai") -- 可替换成你喜欢的配色方案
 --   end
 -- }
 
--- One Nord Theme
+-- One Nord 主题
 -- return {
 --   -- https://github.com/rmehri01/onenord.nvim
 --   'rmehri01/onenord.nvim',
---   lazy = false, -- We want the colorscheme to load immediately when starting Neovim
---   priority = 1000, -- Load the colorscheme before other non-lazy-loaded plugins
+--   lazy = false, -- 希望配色在启动 Neovim 时立即加载
+--   priority = 1000, -- 比其它非懒加载插件更早加载配色
 --   config = function(_, opts)
---     vim.cmd("colorscheme onenord") -- Replace this with your favorite colorscheme
+--     vim.cmd("colorscheme onenord") -- 可替换成你喜欢的配色方案
 --   end
 -- }

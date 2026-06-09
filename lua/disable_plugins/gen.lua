@@ -3,7 +3,7 @@
 return {
     "charlie-xing/codeshell_gen",
     opts = {
-        -- model = "deepseek-coder:6.7b", -- The default model to use.
+        -- model = "deepseek-coder:6.7b", -- 默认使用的模型
         model = "codeshell", -- 默认使用的模型
         display_mode = "float", -- 显示模式，可取 "float" 或 "split"
         show_prompt = false, -- 是否显示提交给 Ollama 的 Prompt

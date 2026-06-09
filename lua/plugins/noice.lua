@@ -20,7 +20,7 @@ return {
                     lua = { pattern = { "^:%s*lua%s+", "^:%s*lua%s*=%s*", "^:%s*=%s*" }, icon = "", lang = "lua" },
                     help = { pattern = "^:%s*he?l?p?%s+", icon = "" },
                     input = {}, -- 供 input() 使用
-                    -- lua = false, -- to disable a format, set to `false`
+                    -- lua = false, -- 设为 `false` 可禁用某种格式
                 },
             },
             messages = {
