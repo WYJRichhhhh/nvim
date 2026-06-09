@@ -19,7 +19,13 @@ keymap.set("n", "<leader>wq", ":wq<CR>", { desc = "保存并退出" }) -- save a
 keymap.set("n", "<leader>wa", ":wa<CR>", { desc = "保存全部" }) -- save all
 keymap.set("n", "<leader>qq", ":q!<CR>", { desc = "退出不保存" }) -- quit without saving
 keymap.set("n", "<leader>ww", ":w<CR>", { desc = "保存当前buffer" }) -- save
-keymap.set("n", "gx", ":!open <c-r><c-a><CR>", { desc = "打开贯标所在的url" }) -- open URL under cursor
+-- 用系统默认程序打开光标下的 URL。macOS 用 open，Linux 用 xdg-open，Windows 用 start。
+-- 旧写法 `:!open` 是 macOS 专属，换到 Linux 会直接报命令找不到。
+keymap.set("n", "gx", function()
+    local url = vim.fn.expand("<cfile>")
+    local opener = (jit.os == "OSX" and "open") or (jit.os == "Windows" and "start") or "xdg-open"
+    vim.fn.jobstart({ opener, url }, { detach = true })
+end, { desc = "用系统默认程序打开光标下的 url" }) -- open URL under cursor
 keymap.set("n", "q", "<cmd> noh <CR>", { desc = "清除高亮" }) -- clear highlights
 keymap.set("n", "<leader>\\w", "<cmd>set wrap!<CR>", { desc = "清除自动换行" }) -- clear highlights
 keymap.set("n", "<leader>sv", "<C-w>v", { desc = "垂直分割窗口" }) -- split window vertically

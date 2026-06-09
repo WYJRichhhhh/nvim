@@ -7,7 +7,9 @@ return {
     'mfussenegger/nvim-dap',
   },
   config = function ()
-    -- Update the path passed to setup to point to your system or virtual env python binary
-    require('dap-python').setup('/Users/rich/.pyenv/shims/python')
+    -- 解释器统一走 core.python（唯一事实来源），从当前文件推断项目根再找 .venv，
+    -- 不写死任何绝对路径。见 CLAUDE.md「Python 环境解析」。
+    local py = require('core.python')
+    require('dap-python').setup(py.venv_python(py.root()))
   end
 }

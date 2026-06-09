@@ -29,7 +29,7 @@ return {
                 "gopls",
                 "html",
                 "cssls",
-                "tsserver",
+                "ts_ls", -- 旧名 tsserver 已废弃，新版 mason-lspconfig 不再识别
                 "bashls",
                 "jsonls",
                 "yamlls",

@@ -1,0 +1,30 @@
+-- 机器特定的本地覆盖模板。
+--
+-- 用法：在每台新机器上 clone 这套配置后，把本文件复制为同目录下的
+--   lua/local.lua
+-- 然后按本机实际情况填写。lua/local.lua 已被 .gitignore 忽略，
+-- 永远不会入库——所以仓库里的核心配置始终保持跨机器通用、干净。
+--
+-- 任何「换台机器就得改」的绝对路径都应当收敛到这里，而不是散落进
+-- 各插件配置。目前只有 Java 的 JDK 安装路径属于这一类（因机而异，
+-- 无法自动探测）；其余语言（Python/Go/Rust/Node…）都已做到从项目根
+-- 或 PATH 自动推断，无需在此声明。
+--
+-- 整个文件是可选的：不存在时各处会优雅退回到自动探测/默认值，
+-- 只是 Java 多 JDK 切换等能力会缺失。
+
+return {
+  java = {
+    -- jdtls 主 JDK（需 JDK 17+）。留空则退回 PATH 上的 `java` / $JAVA_HOME。
+    -- macOS (homebrew): "/opt/homebrew/Cellar/openjdk@21/21.0.5/libexec/openjdk.jdk/Contents/Home"
+    -- Linux (apt/pacman): "/usr/lib/jvm/java-21-openjdk"
+    jdk_home = nil,
+
+    -- 可选：供 jdtls 切换的多版本运行时。不需要多版本就留空表 {}。
+    -- name 必须匹配 Eclipse 的执行环境名（JavaSE-11 / JavaSE-17 / JavaSE-21…）。
+    runtimes = {
+      -- { name = "JavaSE-17", path = "/usr/lib/jvm/java-17-openjdk" },
+      -- { name = "JavaSE-21", path = "/usr/lib/jvm/java-21-openjdk" },
+    },
+  },
+}

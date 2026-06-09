@@ -1,19 +1,40 @@
 local jdtls = require("jdtls")
+
+-- 机器特定的本地覆盖（JDK 安装路径因机而异，无法自动探测）。
+-- 不存在时退回空表，下面各处再优雅降级到 PATH / 默认值。见 lua/local.lua.example。
+local ok_local, local_cfg = pcall(require, "local")
+local java_local = (ok_local and type(local_cfg) == "table" and local_cfg.java) or {}
+
+local mason = vim.fn.stdpath("data") .. "/mason"
+
+-- jdtls 的 config 目录按 OS + CPU 架构区分（config_mac_arm / config_mac / config_linux / config_win）。
+-- 写死成 config_mac_arm 会让 Linux / Intel mac 上直接起不来，这里据运行平台自动选。
+local function jdtls_config_dir()
+    local os_name = jit.os -- "OSX" | "Linux" | "Windows"
+    if os_name == "OSX" then
+        return mason .. (jit.arch == "arm64" and "/packages/jdtls/config_mac_arm" or "/packages/jdtls/config_mac")
+    elseif os_name == "Windows" then
+        return mason .. "/packages/jdtls/config_win"
+    end
+    return mason .. "/packages/jdtls/config_linux"
+end
+
+-- launcher jar 的版本号会随 jdtls 升级变化，写死路径迟早失效，用 glob 取实际文件。
+local function jdtls_launcher_jar()
+    return vim.fn.glob(mason .. "/share/jdtls/plugins/org.eclipse.equinox.launcher_*.jar")
+end
+
 -- 获取当前项目的名称
 local project_name = vim.fn.fnamemodify(vim.fn.getcwd(), ":p:h:t")
 -- 设置工作区目录
 -- vim.env.Home 找到的是用户目录
 local workspace_dir = vim.env.HOME .. "/jdtls-workspace/" .. project_name
-print(workspace_dir)
 -- 调试所需的java包,vim.fn.glob用于去文件系统中匹配模式
 local bundles = {
-    -- vim.fn.glob(
-    --     vim.env.HOME
-    --         .. "/dev/java/java-debug/com.microsoft.java.debug.plugin/target/com.microsoft.java.debug.plugin-0.53.1.jar"
-    -- ),
+    -- java-debug-adapter 的版本号同样会变，用 glob 匹配避免写死。
     vim.fn.glob(
-        vim.env.HOME
-            .. "/.local/share/nvim/mason/packages/java-debug-adapter/extension/server/com.microsoft.java.debug.plugin-0.53.0.jar"
+        mason .. "/packages/java-debug-adapter/extension/server/com.microsoft.java.debug.plugin-*.jar",
+        1
     ),
 }
 
@@ -27,7 +48,7 @@ end
 vim.list_extend(
     bundles,
     vim.split(
-        vim.fn.glob(vim.env.HOME .. "/.local/share/nvim/mason/packages/java-test/extension/server/*.jar", 1),
+        vim.fn.glob(mason .. "/packages/java-test/extension/server/*.jar", 1),
         "\n"
     )
 )
@@ -45,7 +66,7 @@ local config = {
         "-Declipse.product=org.eclipse.jdt.ls.core.product",
         "-Dlog.protocol=true",
         "-Dlog.level=ALL",
-        "-javaagent:" .. vim.env.HOME .. "/.local/share/nvim/mason/share/jdtls/lombok.jar", -- 启动lombok支持
+        "-javaagent:" .. mason .. "/share/jdtls/lombok.jar", -- 启动lombok支持
         "-Xmx4g", -- 设置最大堆内存为4G
         "--add-modules=ALL-SYSTEM",
         "--add-opens",
@@ -57,11 +78,10 @@ local config = {
         "-jar",
         -- self  compile path /dev/java/eclipse.jdt.ls/org.eclipse.jdt.ls.product/target/repository/plugins/org.eclipse.equinox.launcher_1.6.900.v20240613-2009.jar
 
-        vim.env.HOME
-            .. "/.local/share/nvim/mason/share/jdtls/plugins/org.eclipse.equinox.launcher_1.6.900.v20240613-2009.jar",
-        -- TODO Update this to point to the correct jdtls subdirectory for your OS (config_linux, config_mac, config_win, etc)
+        jdtls_launcher_jar(),
+        -- config 目录按运行平台自动选择（见顶部 jdtls_config_dir）。
         "-configuration",
-        vim.env.HOME .. "/.local/share/nvim/mason/packages/jdtls/config_mac_arm",
+        jdtls_config_dir(),
         "-data",
         workspace_dir,
     },
@@ -73,39 +93,18 @@ local config = {
     -- See https://github.com/eclipse/eclipse.jdt.ls/wiki/Running-the-JAVA-LS-server-from-the-command-line#initialize-request
     settings = {
         java = {
-            -- TODO Replace this with the absolute path to your main java version (JDK 17 or higher)
-            home = "/opt/homebrew/Cellar/openjdk@21/21.0.5/libexec/openjdk.jdk/Contents/Home",
+            -- 主 JDK（需 17+）。优先用本机 local.lua 指定的路径；没配就退回
+            -- $JAVA_HOME / PATH 上的 java 所在 JDK，让 jdtls 自己定位，避免写死。
+            home = java_local.jdk_home,
             eclipse = {
                 -- 启用下载源码
                 downloadSources = true,
             },
             configuration = {
                 updateBuildConfiguration = "interactive",
-                -- TODO  根据需要添加支持的java版本，删除未安装的版本
-                -- 运行时名称参数需要匹配特定的Java执行环境，详见nlsp-settings文档
-                -- The runtime name parameters need to match specific Java execution environments.  See https://github.com/tamago324/nlsp-settings.nvim/blob/2a52e793d4f293c0e1d61ee5794e3ff62bfbbb5d/schemas/_generated/jdtls.json#L317-L334
-                runtimes = {
-                    {
-                        name = "JavaSE-11",
-                        path = "/opt/homebrew/Cellar/openjdk@11/11.0.25/libexec/openjdk.jdk/Contents/Home",
-                        version = "11",
-                    },
-                    {
-                        name = "JavaSE-17",
-                        path = "/opt/homebrew/Cellar/openjdk@17/17.0.13/libexec/openjdk.jdk/Contents/Home",
-                        version = "17",
-                    },
-                    -- {
-                    --     name = "JavaSE-21",
-                    --     path = "/opt/homebrew/Cellar/openjdk@21/21.0.5/libexec/openjdk.jdk/Contents/Home",
-                    --     version = "21",
-                    -- },
-                    -- {
-                    --     name = "JavaSE-23",
-                    --     path = "/opt/homebrew/Cellar/openjdk/23.0.1/libexec/openjdk.jdk/Contents/Home",
-                    --     version = "23",
-                    -- },
-                },
+                -- 多版本运行时同样来自 local.lua（因机而异）。未配置则为空表，
+                -- jdtls 直接用上面的 home / 系统默认 java。
+                runtimes = java_local.runtimes or {},
             },
             maven = {
                 -- 启用maven源码下载

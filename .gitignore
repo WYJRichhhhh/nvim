@@ -1,0 +1,3 @@
+# 机器特定的本地覆盖（每台机器各自一份，绝不入库）。
+# 见 lua/local.lua.example 模板与 CLAUDE.md「跨机器移植」一节。
+lua/local.lua
