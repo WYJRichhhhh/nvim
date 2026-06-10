@@ -1,0 +1,11 @@
+-- fugitive 的 blame 窗口(:Git blame)有意把自己设成 winfixbuf——窗口被「钉死」,
+-- 不允许在里面换 buffer。这带来两个反直觉的点:
+--   1. 它只给 gq(BlameQuit)关闭,没映射 q;按 q 其实是在录宏,关不掉窗口。
+--   2. 焦点停在这个钉死窗里时,telescope <leader>fb 选 buffer 会试图在当前窗
+--      edit_buffer,被 winfixbuf 拦下报 E1513,看着像「回不到源文件」。
+--
+-- 习惯上各类只读辅助窗都用 q 关,这里补一个 buffer-local 的 q,直接复用 fugitive
+-- 自己的 gq(BlameQuit:关掉 blame 窗、焦点回源文件)。回到源文件后焦点已离开钉死窗,
+-- <leader>fb 也就恢复正常,两件事一并解决。remap=true 是为了让 RHS 的 gq 命中
+-- fugitive 的 buffer-local gq 映射(它的实现走脚本局部 <SID>,外部只能这样转一手)。
+vim.keymap.set("n", "q", "gq", { buffer = true, remap = true, desc = "关闭 blame 窗口回到源文件" })

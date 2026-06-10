@@ -15,6 +15,8 @@ return {
             end,
         },
         { "rcarriga/nvim-notify" },
+        -- 标签页选择器:为 <leader>ft 提供「在打开的 tab 间查找/切换」(类比 fb 选 buffer)。
+        { "LukasPietzschmann/telescope-tabs" },
     },
     config = function()
         local telescope = require("telescope")
@@ -78,5 +80,11 @@ return {
         -- 没装 make 的机器上它不会编译，load 会失败——用 pcall 兜底优雅退回到
         -- 纯 Lua 的 generic sorter，不让整个 telescope 配置因此报错。
         pcall(telescope.load_extension, "fzf")
+        -- 标签页选择器(<leader>ft)。telescope-tabs 需先 setup 再用，pcall 兜底:
+        -- 万一插件未就绪也不拖垮整个 telescope 配置。
+        pcall(function()
+            require("telescope-tabs").setup({})
+            telescope.load_extension("telescope-tabs")
+        end)
     end,
 }

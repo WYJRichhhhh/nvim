@@ -134,8 +134,12 @@ keymap.set("n", "<leader>fc", function()
     require("telescope.builtin").lsp_incoming_calls()
 end, { desc = "通过LSP查找当前符号调用方" })
 keymap.set("n", "<leader>ft", function()
-    require("telescope.builtin").treesitter()
-end, { desc = "查找语法树" })
+    -- 在打开的标签页间查找/切换,类似 <leader>fb 选 buffer。由 telescope-tabs 提供
+    -- (注册见 plugins/telescope-nvim.lua 的 load_extension)。
+    -- 原 <leader>ft 是 treesitter 符号 picker,与 <leader>fs(结构搜索,树形+模糊过滤)
+    -- 功能重叠且后者更直观,故让位给标签页选择器;浏览代码符号统一走 fs / fS(aerial 浮窗)。
+    require("telescope-tabs").list_tabs()
+end, { desc = "在标签页间查找/切换" })
 
 keymap.set("n", "<leader>fd", function()
     require("telescope.builtin").diagnostics()
@@ -410,10 +414,22 @@ keymap.set("n", "L", ":bnext<cr>", { desc = "下一个缓冲区" })
 keymap.set("n", "H", ":bprevious<cr>", { desc = "上一个缓冲区" })
 
 -- 标签页管理 ------------------------------------------------------------------
-keymap.set("n", "<leader>tn", ":tabnew<CR>", { desc = "打开新标签页" }) -- 打开新标签页
-keymap.set("n", "<leader>tx", ":tabclose<CR>", { desc = "关闭标签页" }) -- 关闭标签页
-keymap.set("n", "<M-.>", ":tabn<CR>", { desc = "下一个标签页" }) -- 下一个标签页
-keymap.set("n", "<M-,>", ":tabp<CR>", { desc = "上一个标签页" }) -- 上一个标签页
+-- 选标签页用 <leader>ft(telescope-tabs,类比 fb 选 buffer);这里是「管理」类动作。
+-- 聚合成表驱动:键母取动作英文词首(new/last/x=close/only),大写=对应小写的更强变体
+-- (to 下一个 ↔ tO 上一个、tx 关当前 ↔ tX 关其余),沿用键位准则四。
+-- 顺序切换额外保留 <M-.>/<M-,>(无 leader,适合连按快速翻页)。
+local tab_keys = {
+    n = { ":tabnew<CR>",   "打开新标签页" },
+    x = { ":tabclose<CR>", "关闭当前标签页" },
+    X = { ":tabonly<CR>",  "关闭其余标签页" },
+    o = { ":tabn<CR>",     "下一个标签页" },  -- o: 取 nO 之外的好按键,与 <M-.> 同义
+    O = { ":tabp<CR>",     "上一个标签页" },
+}
+for key, spec in pairs(tab_keys) do
+    keymap.set("n", "<leader>t" .. key, spec[1], { desc = spec[2] })
+end
+keymap.set("n", "<M-.>", ":tabn<CR>", { desc = "下一个标签页" }) -- 连按快速翻页
+keymap.set("n", "<M-,>", ":tabp<CR>", { desc = "上一个标签页" })
 
 -- Minifiles -------------------------------------------------------------------
 vim.api.nvim_set_keymap("n", "<leader>ef", ":lua RevealInMiniFiles()<CR>",
