@@ -58,20 +58,9 @@ return {
                 virt_text_pos = "eol",
             })
 
-            -- 调试快捷键
-            local map = vim.keymap.set
-            map("n", "<leader>db", dap.toggle_breakpoint, { desc = "调试: 切换断点" })
-            map("n", "<leader>dB", function()
-                dap.set_breakpoint(vim.fn.input("Breakpoint condition: "))
-            end, { desc = "调试: 条件断点" })
-            map("n", "<leader>dc", dap.continue, { desc = "调试: 启动/继续" })
-            map("n", "<leader>do", dap.step_over, { desc = "调试: 单步跳过" })
-            map("n", "<leader>di", dap.step_into, { desc = "调试: 单步进入" })
-            map("n", "<leader>dO", dap.step_out, { desc = "调试: 单步跳出" })
-            map("n", "<leader>dr", dap.repl.toggle, { desc = "调试: REPL" })
-            map("n", "<leader>dl", dap.run_last, { desc = "调试: 运行上次" })
-            map("n", "<leader>du", dapui.toggle, { desc = "调试: 切换 UI" })
-            map("n", "<leader>dt", dap.terminate, { desc = "调试: 终止" })
+            -- 通用调试键（断点/继续/单步/REPL/UI/终止）统一定义在 core/keymaps.lua 的
+            -- <leader>d* 命名空间，单一事实来源——这里不再重复绑定，否则会和全局键互相覆盖。
+            -- Python 专属的「调试测试类/方法」在 ftplugin/python.lua 里按 buffer-local 绑。
 
             -- 把 debugpy 装进“当前项目对应的 .venv”。
             -- uv 项目推荐：在项目里执行 `uv add --dev debugpy`（会写进 pyproject）。

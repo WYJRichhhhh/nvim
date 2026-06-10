@@ -22,6 +22,23 @@ return {
         
         -- 设置默认的一些行为
         telescope.setup({
+            defaults = {
+                -- 不设 cwd：让 live_grep/find_files 默认按 getcwd()（即 `nvim .` 的项目根）搜，
+                -- 这正是我们要的「搜整个项目」。早先这里设过 cwd=当前文件目录，既不符本意、
+                -- 又因写在没生效的顶层 opts 里而从未起作用，故彻底去掉。
+                layout_config = {
+                    vertical = {
+                        width = 0.75,
+                    },
+                },
+                -- 左侧截断:路径原样显示,窗口放不下时只从左边用 … 省略,
+                -- 文件名和最近几级目录始终可见——方便区分同名文件(如多个 bootstrap.py)
+                -- 到底在哪级目录。不用 shorten:它会把每级目录砍成头几个字母
+                -- (management→man、source→src),反而看不出真实路径。
+                path_display = {
+                    truncate = 3,
+                },
+            },
             extensions = {
                 fzf = {
                     fuzzy = true,
@@ -57,36 +74,9 @@ return {
         
         -- 加载扩展
         telescope.load_extension("notify")
+        -- fzf-native 是 C 扩展，靠 `make` 编译（见 dependencies 里的 cond）。
+        -- 没装 make 的机器上它不会编译，load 会失败——用 pcall 兜底优雅退回到
+        -- 纯 Lua 的 generic sorter，不让整个 telescope 配置因此报错。
+        pcall(telescope.load_extension, "fzf")
     end,
-    extensions = {
-        --["ui-select"] = {
-            --require("telescope.themes").get_dropdown({}),
-        --},
-        fzf = {
-            fuzzy = true,
-            override_generic_sorter = true,
-            override_file_sorter = true,
-            case_mode = "smart_case",
-        },
-        notify = {
-            -- 可以添加notify扩展的特定配置
-        },
-    },
-    opts = {
-        defaults = {
-            cwd = vim.fn.expand("%:p:h"),
-            layout_config = {
-                vertical = {
-                    width = 0.75,
-                },
-            },
-            path_display = {
-                shorten = 3,
-                truncate = 3,
-                -- filename_first = {
-                --     reverse_directories = true,
-                -- },
-            },
-        },
-    },
 }

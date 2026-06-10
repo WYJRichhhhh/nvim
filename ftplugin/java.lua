@@ -181,17 +181,22 @@ local config = {
         require("jdtls.dap").setup_dap_main_class_configs()
         local bufopts = { noremap = true, silent = true, buffer = bufnr }
         -- nvim-jdtls 额外提供的一些方法
-        nnoremap("<leader>oi", jdtls.organize_imports, bufopts, "优化导入")
-        nnoremap("<space>ev", jdtls.extract_variable, bufopts, "提取变量")
-        nnoremap("<space>ec", jdtls.extract_constant, bufopts, "提取常量")
+        -- 整理导入：统一走 core.imports（键位常量在那里定义），Java 传入 jdtls 专有方法。
+        require("core.imports").setup(jdtls.organize_imports, bufnr)
+        -- 重构-提取（jdtls 专有，buffer-local）。统一用 <leader> 写法（= <space>，但全仓统一）。
+        -- e=extract 子命名空间：ev 变量 / ec 常量 / em 方法。
+        nnoremap("<leader>ev", jdtls.extract_variable, bufopts, "重构: 提取变量")
+        nnoremap("<leader>ec", jdtls.extract_constant, bufopts, "重构: 提取常量")
         vim.keymap.set(
             "v",
-            "<space>em",
+            "<leader>em",
             [[<ESC><CMD>lua require('jdtls').extract_method(true)<CR>]],
-            { noremap = true, silent = true, buffer = bufnr, desc = "提取方法" }
+            { noremap = true, silent = true, buffer = bufnr, desc = "重构: 提取方法" }
         )
-        nnoremap("<leader>vc", jdtls.test_class, bufopts, "Test class (DAP)")
-        nnoremap("<leader>vm", jdtls.test_nearest_method, bufopts, "Test method (DAP)")
+        -- 调试当前测试类 / 测试方法。统一到调试命名空间 <leader>d 下的 dt(debug-test) 子类，
+        -- 与 Python(ftplugin/python.lua) 用同一套键位：dtc=测试类、dtm=测试方法。
+        nnoremap("<leader>dtc", jdtls.test_class, bufopts, "调试: 当前测试类")
+        nnoremap("<leader>dtm", jdtls.test_nearest_method, bufopts, "调试: 当前测试方法")
     end,
 }
 
