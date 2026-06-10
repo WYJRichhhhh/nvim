@@ -22,7 +22,7 @@
 --
 -- 三、leader 前缀 = 语义命名空间，一个前缀只装一类，并在 which-key 登记
 --   <leader> 后首字母按「功能英文首字母」分组，同类聚拢、异类不混：
---     f 查找(find)   g Git    d 调试(debug)   s 窗口(split)   h 书签(harpoon)
+--     f 查找(find)   g Git    d 调试(debug)   s 窗口(split)
 --     w 保存(write)  t 标签/主题   n 通知    c diff/合并   F 跳转(Hop)   o 整理(organize)
 --   加新键先问「它属于哪一类」，落到对应前缀，并在 plugins/which-key.lua 标注分组。
 --   不属于任何现有类时，宁可新开一个语义清晰的前缀，也别塞进不相干的前缀凑数
@@ -147,43 +147,6 @@ keymap.set("n", "<leader>fn", function()
     -- 由 telescope 的 notify 扩展(见 plugins/telescope-nvim.lua 里的 load_extension)渲染。
     require("telescope").extensions.notify.notify()
 end, { desc = "查找通知历史" })
-
--- Harpoon ---------------------------------------------------------------------
-keymap.set("n", "<leader>ha", require("harpoon.mark").add_file, { desc = "添加书签" })
-keymap.set("n", "<leader>hh", require("harpoon.ui").toggle_quick_menu, { desc = "打开书签列表" })
-keymap.set("n", "<leader>h1", function()
-    require("harpoon.ui").nav_file(1)
-end, { desc = "打开书签1" })
-keymap.set("n", "<leader>h2", function()
-    require("harpoon.ui").nav_file(2)
-end, { desc = "打开书签2" })
-keymap.set("n", "<leader>h3", function()
-    require("harpoon.ui").nav_file(3)
-end, { desc = "打开书签3" })
-
-keymap.set("n", "<leader>h4", function()
-    require("harpoon.ui").nav_file(4)
-end, { desc = "打开书签4" })
-
-keymap.set("n", "<leader>h5", function()
-    require("harpoon.ui").nav_file(5)
-end, { desc = "打开书签5" })
-
-keymap.set("n", "<leader>h6", function()
-    require("harpoon.ui").nav_file(6)
-end, { desc = "打开书签6" })
-
-keymap.set("n", "<leader>h7", function()
-    require("harpoon.ui").nav_file(7)
-end, { desc = "打开书签7" })
-
-keymap.set("n", "<leader>h8", function()
-    require("harpoon.ui").nav_file(8)
-end, { desc = "打开书签8" })
-
-keymap.set("n", "<leader>h9", function()
-    require("harpoon.ui").nav_file(9)
-end, { desc = "打开书签9" })
 
 -- LSP -------------------------------------------------------------------------
 keymap.set("n", "lh", "<cmd>lua vim.lsp.buf.hover()<CR>", { desc = "显示悬停信息" })
@@ -398,20 +361,36 @@ end, { desc = "Toggle垂直终端" })
 
 -- hop -------------------------------------------------------------------------
 -- 全局跨行跳转用无 leader 单键 s/S（够短、高频）；带范围限定的跳转归到 <leader>F* 跳转区。
+-- s 全局单字符跳转、f/F 行内单字符跳转，三者都走 hop 打标签，且都兼认全角：按键后再按
+-- . 会把 . 和 。 一起打标签（模式由 cjk_punct.hop_pattern 构造，与 operator-pending
+-- 的 df. 共用同一张全/半角表）。直接调 hop.hint_patterns 而非 :HopChar1，因为只有它
+-- 能接受我们拼好的「半角或全角」正则。
+keymap.set("n", "s", function()
+    local key = vim.fn.getcharstr() -- 读目标键
+    require("hop").hint_patterns({}, require("core.cjk_punct").hop_pattern(key))
+end, { desc = "单字符跳转(兼匹配全角标点)" })
 keymap.set("n", "S", ":HopChar2<cr>", { desc = "两字符跳转" })
-keymap.set("n", "s", ":HopChar1<cr>", { desc = "单字符跳转" })
 keymap.set("n", "<leader>Fb", ":HopLineStart<cr>", { desc = "跳转: 行首" })
 keymap.set("n", "<leader>Fl", ":HopVertical<cr>", { desc = "跳转: 垂直(行)" })
 keymap.set("n", "<leader>Fw", ":HopWord<cr>", { desc = "跳转: 单词" })
--- f/F 增强为「行内单字符跳转」（hop），覆盖原生行内 find，方向：f 向前 / F 向后。
+-- f/F 行内单字符跳转（hop），覆盖原生行内 find，方向：f 向前 / F 向后。同样兼认全角。
+local function hop_inline_find(dir)
+    local hop = require("hop")
+    local hint = require("hop.hint")
+    local key = vim.fn.getcharstr() -- 读目标键
+    hop.hint_patterns({
+        direction = hint.HintDirection[dir],
+        current_line_only = true,
+    }, require("core.cjk_punct").hop_pattern(key))
+end
 keymap.set({ "n", "v" }, "f", function()
-    vim.cmd("HopChar1CurrentLineAC")
-end, { desc = "行内单字符向前跳转" })
+    hop_inline_find("AFTER_CURSOR")
+end, { desc = "行内单字符向前跳转(兼匹配全角标点)" })
 keymap.set({ "n", "v" }, "F", function()
-    vim.cmd("HopChar1CurrentLineBC")
-end, { desc = "行内单字符向后跳转" })
--- 注：t/T 不再映射成与 f/F 完全相同的 hop（旧配置如此，纯属浪费两个键），
--- 还给原生 till（dt(/ct" 之类的 operator 组合依赖它）。
+    hop_inline_find("BEFORE_CURSOR")
+end, { desc = "行内单字符向后跳转(兼匹配全角标点)" })
+-- 注：t/T 不接 hop（hop 标签跳转给不了 till「落在目标前一格」语义），还给原生 till，
+-- dt(/ct" 之类的 operator 组合依赖它；其全角增强见下方 setup()。
 
 -- 全角标点无缝匹配 ------------------------------------------------------------
 -- 上面把 n/v 的 f/F/t/T 给了 hop(行内高亮跳转);下面这行只增强 operator-pending 模式

@@ -21,7 +21,6 @@ return {
             { "<leader>f", group = "查找" },
             { "<leader>F", group = "跳转(Hop)" },
             { "<leader>g", group = "Git" },
-            { "<leader>h", group = "书签(Harpoon)" },
             { "<leader>n", group = "通知" },
             { "<leader>o", group = "整理(导入)" },
             { "<leader>s", group = "窗口" },

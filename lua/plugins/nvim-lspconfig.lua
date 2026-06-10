@@ -131,7 +131,7 @@ return {
                     })
 
                     -- 将上面的配置发送给LSP服务器 以应用新的配置
-                    client.notify("workspace/didChangeConfiguration", { settings = client.config.settings })
+                    client:notify("workspace/didChangeConfiguration", { settings = client.config.settings })
                 end
                 return true
             end,
