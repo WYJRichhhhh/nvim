@@ -1,4 +1,40 @@
 -- Git工具集成配置
+
+-- diffview / Flog 这类「重界面」各自独占一个 tab、把多个窗口当成一个整体打开，
+-- 却不自带关闭键，于是只能用 <leader>qq 逐个关 buffer，很笨。这里给它们统一加
+-- 「开/关切换」：同一个键按一下开、再按一下整体关掉。
+-- （gg=Neogit 自带 q、gB=fugitive blame 自带 gq，已能整体关，无需在此处理。）
+
+-- 切换 diffview：lib.views 里有任意视图(差异/文件历史，含 Neogit 唤起的)就全部关掉，
+-- 否则按传入命令打开。
+-- 关闭不能用 :DiffviewClose——它只关「当前 tab 的那个 view」(内部走 get_current_view，
+-- 只认 view.tabpage==当前tab)。Neogit 唤起的 diff 在别的 tab，你按键时焦点不在那里，
+-- DiffviewClose 就成了空操作、关不掉。所以这里直接遍历 lib.views 逐个 view:close()，
+-- 对原生和 Neogit 唤起的 view 一视同仁。倒序遍历因 close 会从该表移除元素。
+local function diffview_toggle(open_cmd)
+  return function()
+    local views = require("diffview.lib").views
+    if next(views) == nil then
+      vim.cmd(open_cmd)
+    else
+      for i = #views, 1, -1 do
+        views[i]:close()
+      end
+    end
+  end
+end
+
+-- 切换 Flog：扫到已打开的 floggraph 窗口就关掉它所在的 tab(Flog 独占 tab)，否则开 Flog。
+local function flog_toggle()
+  for _, win in ipairs(vim.api.nvim_list_wins()) do
+    if vim.bo[vim.api.nvim_win_get_buf(win)].filetype == "floggraph" then
+      vim.api.nvim_win_call(win, function() vim.cmd("tabclose") end)
+      return
+    end
+  end
+  vim.cmd("Flog")
+end
+
 return {
   {
     -- 行内Git变更指示器
@@ -78,9 +114,12 @@ return {
     "sindrets/diffview.nvim",
     cmd = { "DiffviewOpen", "DiffviewFileHistory" },
     keys = {
-      { "<leader>gv", "<cmd>DiffviewOpen<CR>", desc = "打开差异查看器" },
-      { "<leader>gh", "<cmd>DiffviewFileHistory<CR>", desc = "查看文件历史" },
-      { "<leader>gH", "<cmd>DiffviewFileHistory %<CR>", desc = "查看当前文件历史" },
+      { "<leader>gv", diffview_toggle("DiffviewOpen"), desc = "切换差异查看器" },
+      -- 不传参 = 当前文件历史，Diffview 自己回溯真实 git 路径，
+      -- 即使人在 gitsigns 的索引/diff 虚拟 buffer 里也不会崩（不像 % 会展开成假路径）
+      { "<leader>gh", diffview_toggle("DiffviewFileHistory"), desc = "切换当前文件历史" },
+      -- 传 . = 整个项目（仓库根）历史
+      { "<leader>gH", diffview_toggle("DiffviewFileHistory ."), desc = "切换整个项目历史" },
     },
     opts = {
       diff_binaries = false,  -- 不比较二进制文件
@@ -209,7 +248,7 @@ return {
       "tpope/vim-fugitive",
     },
     keys = {
-      { "<leader>gl", "<cmd>Flog<CR>", desc = "查看Git日志(Flog)" },
+      { "<leader>gl", flog_toggle, desc = "切换Git日志(Flog)" },
     },
   },
   {
@@ -226,8 +265,7 @@ return {
     keys = {
       { "<leader>gB", "<cmd>Git blame<CR>", desc = "Git blame" },
       { "<leader>gc", "<cmd>Git commit<CR>", desc = "Git commit" },
-      { "<leader>gP", "<cmd>Git push<CR>", desc = "Git push" },
-      { "<leader>gL", "<cmd>Git pull<CR>", desc = "Git pull" },
+      -- push/pull 走 Neogit 控制台（<leader>gg）完成，这里不再单独留键位
     },
   },
 } 
