@@ -188,6 +188,29 @@ return {
     keys = {
       { "<leader>gg", "<cmd>Neogit<CR>", desc = "打开Neogit" },
     },
+    config = function(_, opts)
+      -- 修复 neogit 上游 bug：被「其它 worktree」检出的分支在 diff/branch popup 里消失。
+      -- 根因：neogit 的 get_local_branches 靠解析 `git branch` 的文本，正则写死成
+      -- "^  (.+)"（恰好两个空格开头）。但 git 对被其它 worktree 占用的分支用的是 "+ "
+      -- 前缀（不是空格），于是这些分支被整体丢弃——`d r`(diff range)、`b`(branch popup)
+      -- 的候选里既看不到也搜不到。而 `l o`(log other)走的是 for-each-ref，不受影响。
+      -- 这里把 get_local_branches 改为同样复用 for-each-ref（refs.list_local_branches），
+      -- 它按 refname 枚举、不看 worktree 占用前缀，从源头绕开解析缺陷。
+      local branch = require("neogit.lib.git.branch")
+      branch.get_local_branches = function(include_current)
+        local locals = require("neogit.lib.git.refs").list_local_branches()
+        if include_current then
+          return locals
+        end
+        -- include_current=false 时按原语义排除当前分支
+        local current = branch.current()
+        return vim.tbl_filter(function(b)
+          return b ~= current
+        end, locals)
+      end
+
+      require("neogit").setup(opts)
+    end,
     opts = {
       integrations = {
         diffview = true,     -- 使用diffview.nvim集成

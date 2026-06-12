@@ -24,6 +24,7 @@
 --   <leader> 后首字母按「功能英文首字母」分组，同类聚拢、异类不混：
 --     f 查找(find)   g Git    d 调试(debug)   s 窗口(split)
 --     w 保存(write)  t 标签/主题   n 通知    c diff/合并   F 跳转(Hop)   o 整理(organize)
+--     y 复制路径(yank)   a AI(claude 交互)
 --   加新键先问「它属于哪一类」，落到对应前缀，并在 plugins/which-key.lua 标注分组。
 --   不属于任何现有类时，宁可新开一个语义清晰的前缀，也别塞进不相干的前缀凑数
 --   （曾把 HopWord 误放进 <leader>f 查找区，已移回跳转区 <leader>Fw）。
@@ -91,6 +92,27 @@ keymap.set("n", "<C-j>", "<C-w>j", { desc = "光标移动到下侧窗口" }) -- 
 keymap.set("n", "<C-k>", "<C-w>k", { desc = "光标移动到上侧窗口" }) -- 向上移动
 keymap.set("n", "<C-l>", "<C-w>l", { desc = "光标移动到右侧窗口" }) -- 向右移动
 
+-- 复制路径 --------------------------------------------------------------------
+-- 把当前 buffer 的路径写进系统剪贴板(+)。显式 setreg("+") 而非依赖 unnamedplus,
+-- 意图更直白、也不受将来 clipboard 配置变动影响。三种粒度只是文件名修饰符不同,
+-- 故用表聚合 + 循环生成,避免三行近乎重复的 keymap.set(见准则六:同类同写法)。
+--   :p 绝对路径   :.  相对当前工作目录(cwd,非严格项目根)   :t 仅文件名
+for _, m in ipairs({
+    { key = "yp", mod = ":p", label = "绝对路径" },
+    { key = "yr", mod = ":.", label = "相对路径(cwd)" },
+    { key = "yn", mod = ":t", label = "文件名" },
+}) do
+    keymap.set("n", "<leader>" .. m.key, function()
+        local path = vim.fn.expand("%" .. m.mod)
+        if path == "" then
+            vim.notify("当前 buffer 没有关联文件", vim.log.levels.WARN)
+            return
+        end
+        vim.fn.setreg("+", path)
+        vim.notify("已复制" .. m.label .. ": " .. path)
+    end, { desc = "复制" .. m.label })
+end
+
 -- diff 相关键位 ---------------------------------------------------------------
 keymap.set("n", "<leader>cc", ":diffput<CR>", { desc = "diff: 推送当前更改到对方" }) -- diff 时把当前侧更改推送到对方
 keymap.set("n", "<leader>cj", ":diffget 1<CR>", { desc = "diff: 采用左侧(本地)更改" }) -- 合并时采用左侧(本地)更改
@@ -154,10 +176,11 @@ end, { desc = "查找通知历史" })
 
 -- LSP -------------------------------------------------------------------------
 keymap.set("n", "lh", "<cmd>lua vim.lsp.buf.hover()<CR>", { desc = "显示悬停信息" })
-keymap.set("n", "gd", "<cmd>lua vim.lsp.buf.definition()<CR>", { desc = "跳转到定义" })
+-- 不使用nvim原生lsp的跳转，统一改用telescope(多结果时弹列表，风格同gr)
+keymap.set("n", "gd", "<cmd>lua require('telescope.builtin').lsp_definitions()<CR>", { desc = "跳转到定义" })
 keymap.set("n", "gD", "<cmd>lua vim.lsp.buf.declaration()<CR>", { desc = "跳转到声明" })
-keymap.set("n", "gi", "<cmd>lua vim.lsp.buf.implementation()<CR>", { desc = "跳转到实现" })
-keymap.set("n", "gt", "<cmd>lua vim.lsp.buf.type_definition()<CR>", { desc = "跳转到类型定义" })
+keymap.set("n", "gi", "<cmd>lua require('telescope.builtin').lsp_implementations()<CR>", { desc = "跳转到实现" })
+keymap.set("n", "gt", "<cmd>lua require('telescope.builtin').lsp_type_definitions()<CR>", { desc = "跳转到类型定义" })
 -- 不使用nvim原生lsp的references，使用telescope的lsp_references
 -- keymap.set("n", "gr", "<cmd>lua vim.lsp.buf.references()<CR>", { desc = "查找引用" })
 keymap.set("n", "gr", "<cmd>lua require('telescope.builtin').lsp_references() <CR>", { desc = "查找引用" })
@@ -405,6 +428,14 @@ require("core.cjk_punct").setup()
 -- copilot-chat ----------------------------------------------------------------
 -- CopilotChat 插件已停用（见 disable_plugins/），相关快捷键随之移除。
 
+-- AI（claude 即问即答）---------------------------------------------------------
+-- 调本机 claude CLI 做一次性交互（无多轮/无历史）,实现见 core/claude_chat.lua。
+-- 新开 <leader>a 命名空间（AI/ask）:不属于查找/Git 等任何现有类,按准则三宁可新开。
+--   at 可视模式:把选中文本当作要翻译的词,弹词汇讲解卡片(音标/词根/例句等)。
+--   aa 普通模式:以当前文件全文为上下文,弹输入框提问,即问即答。
+keymap.set("v", "<leader>at", function() require("core.claude_chat").translate() end, { desc = "AI: 翻译选中内容" })
+keymap.set("n", "<leader>aa", function() require("core.claude_chat").ask() end, { desc = "AI: 就当前文件提问" })
+
 -- 缓冲区 ----------------------------------------------------------------------
 -- stylua: ignore start
 local utils = require("core.utils")
@@ -436,8 +467,14 @@ vim.api.nvim_set_keymap("n", "<leader>ef", ":lua RevealInMiniFiles()<CR>",
   { noremap = true, silent = true, desc = "在MiniFiles中显示" })
 
 function RevealInMiniFiles()
-  local path = vim.fn.expand("%:p:h") -- 获取当前文件的目录路径
-  require("mini.files").open(path)    -- 在 mini.files 中打开该目录
+  local file = vim.fn.expand("%:p")        -- 当前文件全路径
+  if file == "" or vim.fn.filereadable(file) == 0 then
+    -- 无名/未保存 buffer 没有可定位的文件，退回到工作目录
+    require("mini.files").open(vim.fn.getcwd())
+    return
+  end
+  require("mini.files").open(file)         -- 传文件路径：打开所在目录并把光标定位到该文件
+  require("mini.files").reveal_cwd()       -- 展开到工作目录，形成从根到文件的完整路径
 end
 
 -- 调试：DAP UI widgets --------------------------------------------------------

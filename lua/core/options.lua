@@ -50,10 +50,20 @@ opt.mouse = ""
 -- 折叠设置
 opt.foldlevel = 20 -- 默认展开20
 opt.foldmethod = "expr"
-opt.foldexpr = "nvim_treesitter#foldexpr()" -- 更智能的语法折叠
+-- neovim 内置 treesitter 折叠(nvim-treesitter main 分支不再提供 nvim_treesitter#foldexpr)。
+-- 无 parser 的 buffer 上该表达式安全返回 0,不会报错。
+opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
 
 -- 未保存文件提示
 opt.confirm = true
+
+-- 文件被外部改动（如 git 切分支）且本地无未保存改动时，允许自动重载 buffer。
+-- 注意 autoread 只是"授权重载"，本身不会主动检测——真正发起检测靠 autocmds.lua 里定时跑的 :checktime。
+opt.autoread = true
+
+-- CursorHold 等事件的触发间隔，默认 4000ms 偏钝。本配置已禁用 swapfile，
+-- 调低没有"频繁写交换文件"的副作用，顺带让 autocmds.lua 的 :checktime、LSP、gitsigns 更跟手。
+opt.updatetime = 250
 
 -- 设置默认的shell为zsh
 opt.shell = "zsh"

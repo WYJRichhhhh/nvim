@@ -15,6 +15,7 @@ return {
         -- <leader>e 兼有 minifiles(ef) 与 Java 重构-提取(ev/ec/em)，buffer 内才出现，统标「重构/文件」。
         wk.add({
             mode = { "n", "v" },
+            { "<leader>a", group = "AI(claude)" },
             { "<leader>c", group = "Diff/Mason" },
             { "<leader>d", group = "调试" },
             { "<leader>e", group = "重构/文件" },
@@ -26,6 +27,7 @@ return {
             { "<leader>s", group = "窗口" },
             { "<leader>t", group = "标签页/切换" },
             { "<leader>w", group = "保存" },
+            { "<leader>y", group = "复制路径" },
         })
 
         -- 修补「关掉 Flog(gl)/blame(gb) 等辅助窗后 which-key 不再弹提示」的竞争。

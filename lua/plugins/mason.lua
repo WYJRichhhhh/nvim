@@ -67,7 +67,10 @@ return {
         }
 
         if vim.fn.has("win32") == 0 then
-            mason_packages = vim.tbl_extend("force", mason_packages, linux_only_pacakages)
+            -- mason_packages 与 linux_only_pacakages 都是数组(list)。
+            -- tbl_extend 按 key 合并，会用 linux 包的 [1] 覆盖 mason_packages 的 [1]，
+            -- 导致 bicep-lsp 丢失、列表被截断。用 list_extend 做真正的追加。
+            vim.list_extend(mason_packages, linux_only_pacakages)
         end
 
         local mr = require("mason-registry")
