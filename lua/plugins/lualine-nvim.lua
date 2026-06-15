@@ -4,6 +4,21 @@ return {
     dependencies = { "echasnovski/mini.icons", "scottmckendry/cyberdream.nvim" },
     opts = function()
         local utils = require("core.utils")
+
+        -- 录制宏开始/结束时立即刷新状态栏，避免延迟
+        vim.api.nvim_create_autocmd("RecordingEnter", {
+            callback = function()
+                require("lualine").refresh()
+            end,
+        })
+        vim.api.nvim_create_autocmd("RecordingLeave", {
+            callback = function()
+                -- RecordingLeave 触发时 reg_recording() 仍非空，延后到下一 tick 再刷新
+                vim.schedule(function()
+                    require("lualine").refresh()
+                end)
+            end,
+        })
         -- 为copilot状态设置颜色
         local copilot_colors = {
             [""] = utils.get_hlgroup("Comment"),
@@ -142,6 +157,16 @@ return {
                     },
                 },
                 lualine_x = {
+                    -- 显示宏录制状态
+                    {
+                        function()
+                            return "  REC @" .. vim.fn.reg_recording()
+                        end,
+                        cond = function()
+                            return vim.fn.reg_recording() ~= ""
+                        end,
+                        color = utils.get_hlgroup("DiagnosticError"),
+                    },
                     {
                         -- 显示更新状态
                         require("lazy.status").updates,

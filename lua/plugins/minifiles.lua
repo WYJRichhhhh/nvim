@@ -145,7 +145,10 @@ return {
             if not is_valid_git_repo() then
                 return
             end
-            local cwd = vim.fn.expand("%:p:h")
+            -- 必须用 getcwd()：本事件触发时当前 buffer 已是 mini.files 的特殊缓冲
+            -- （名字形如 minifiles://...），expand("%:p:h") 会取到这个 URI 而非真实目录，
+            -- 传给 git 的 cwd 就 ENOENT。且相对路径计算、.git 判断、缓存 key 本就以 getcwd 为准。
+            local cwd = vim.fn.getcwd()
             local currentTime = os.time()
             if gitStatusCache[cwd] and currentTime - gitStatusCache[cwd].time < cacheTimeout then
                 updateMiniWithGit(buf_id, gitStatusCache[cwd].statusMap)
@@ -193,7 +196,8 @@ return {
             pattern = "MiniFilesBufferUpdate",
             callback = function(sii)
                 local bufnr = sii.data.buf_id
-                local cwd = vim.fn.expand("%:p:h")
+                -- 同 updateGitStatus：缓存 key 以 getcwd 为准，不能用 expand("%:p:h")
+                local cwd = vim.fn.getcwd()
                 if gitStatusCache[cwd] then
                     updateMiniWithGit(bufnr, gitStatusCache[cwd].statusMap)
                 end

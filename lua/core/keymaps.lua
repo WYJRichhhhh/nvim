@@ -175,6 +175,17 @@ keymap.set("n", "<leader>fn", function()
 end, { desc = "查找通知历史" })
 
 -- LSP -------------------------------------------------------------------------
+-- 删除 Neovim 0.11+ 内置的 gr* 默认映射家族(grr/gri/gra/grn/grt/grx)。
+-- 这些是 nvim 自带的全局默认(见 :h lsp-defaults),分别走原生 references/implementation/
+-- code action/rename 等。我们这套已用 gr/gi/gt(telescope)、rn、ga 各自绑了等价功能,内置那批
+-- 纯属重复;更要命的是它们让我们的 `gr` 变成「前缀键」——按下 gr 后 nvim 要等 timeoutlen 看你
+-- 会不会补成 grr/gri/…,于是 gr 触发 telescope 有延迟,手快补个 r 还会误打成 grr(走原生
+-- references,结果蹦进下方 quickfix 而非 telescope)。删掉整组,gr 即瞬时触发、且不可能再误触。
+for _, lhs in ipairs({ "grr", "gri", "gra", "grn", "grt", "grx" }) do
+  -- pcall 兜底:个别版本/未来改名时该映射可能不存在,del 不存在的映射会报错。
+  pcall(vim.keymap.del, "n", lhs)
+end
+
 keymap.set("n", "lh", "<cmd>lua vim.lsp.buf.hover()<CR>", { desc = "显示悬停信息" })
 -- 不使用nvim原生lsp的跳转，统一改用telescope(多结果时弹列表，风格同gr)
 keymap.set("n", "gd", "<cmd>lua require('telescope.builtin').lsp_definitions()<CR>", { desc = "跳转到定义" })

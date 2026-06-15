@@ -115,6 +115,12 @@ function M.open()
             sorter = conf.generic_sorter({}),
             previewer = conf.qflist_previewer({}),
             push_cursor_on_edit = true,
+            -- telescope 默认 sorting_strategy = "descending":第一条结果贴着输入框
+            -- 放在底部,会把这里的树形顺序整个上下颠倒,与 <leader>fS 浮窗(普通
+            -- buffer,从上往下渲染)相反。改成升序 + 输入框置顶,让符号从上到下排,
+            -- 与浮窗大纲保持一致的阅读顺序。
+            sorting_strategy = "ascending",
+            layout_config = { prompt_position = "top" },
         })
         :find()
 end

@@ -35,6 +35,90 @@ local function flog_toggle()
   vim.cmd("Flog")
 end
 
+-- worktree 选择器(<leader>gw):列出本仓库所有 worktree,选中后用 Neogit 打开「那个 worktree
+-- 目录」的状态缓冲区。
+--
+-- 解决的痛点:用 git worktree 时主 nvim 停在 dev/test 分支的主 worktree 不动,而 claude agent
+-- 在别处的 worktree 开 feat/xxx 做开发。过去想看那个分支改了啥、或帮它提交,只能:先开 shell
+-- 进到那个目录 `add . && commit`,再回 nvim 用 log 看 commit 改了啥——因为 worktree 检出的分支
+-- 不能在主 worktree 里 checkout,neogit 又默认只盯当前 worktree。
+--
+-- 而 neogit 的 open 支持 `cwd=`,内部按该目录单独建 repository 实例(repository.instance(cwd)),
+-- 把整个状态缓冲区钉在那个 worktree 上。于是无需 checkout、无需开 shell:选中 worktree 即在它的
+-- 状态缓冲区里直接看未提交的 diff(<Tab> 展开)、`s` 暂存、`c c` 提交,全程不离开当前 nvim。
+local function neogit_worktree_picker()
+  -- 从「当前文件所在目录」推断仓库,而不是 nvim 的 getcwd——这样在任意 buffer 里触发都落到对的仓库。
+  local dir = vim.fn.expand("%:p:h")
+  if dir == "" then
+    dir = vim.uv.cwd()
+  end
+
+  local out = vim.fn.systemlist({ "git", "-C", dir, "worktree", "list", "--porcelain" })
+  if vim.v.shell_error ~= 0 then
+    vim.notify("不在 git 仓库内,或 git worktree 不可用", vim.log.levels.WARN)
+    return
+  end
+
+  -- 解析 porcelain 输出:每条记录以 "worktree <path>" 起头,后跟 HEAD/branch 行(裸仓库或游离头则没有
+  -- branch,分别标成 (bare)/(detached))。逐行累进到 cur 这条记录上。
+  local worktrees = {}
+  local cur
+  for _, line in ipairs(out) do
+    local path = line:match("^worktree (.+)$")
+    if path then
+      cur = { path = path }
+      table.insert(worktrees, cur)
+    elseif cur then
+      local br = line:match("^branch refs/heads/(.+)$")
+      if br then
+        cur.branch = br
+      elseif line == "detached" then
+        cur.branch = "(detached)"
+      elseif line == "bare" then
+        cur.branch = "(bare)"
+      end
+    end
+  end
+
+  -- 按最长分支名对齐,让「分支名 + 路径」两列扫一眼就分得清。
+  local width = 0
+  for _, w in ipairs(worktrees) do
+    width = math.max(width, vim.fn.strdisplaywidth(w.branch or ""))
+  end
+
+  local pickers = require("telescope.pickers")
+  local finders = require("telescope.finders")
+  local conf = require("telescope.config").values
+  local actions = require("telescope.actions")
+  local action_state = require("telescope.actions.state")
+
+  pickers.new({}, {
+    prompt_title = "Git Worktrees (回车: 用 Neogit 打开其状态)",
+    finder = finders.new_table({
+      results = worktrees,
+      entry_maker = function(w)
+        local branch = w.branch or "(unknown)"
+        return {
+          value = w,
+          display = string.format("%-" .. width .. "s  %s", branch, w.path),
+          ordinal = branch .. " " .. w.path,
+        }
+      end,
+    }),
+    sorter = conf.generic_sorter({}),
+    attach_mappings = function(prompt_bufnr)
+      actions.select_default:replace(function()
+        actions.close(prompt_bufnr)
+        local sel = action_state.get_selected_entry()
+        if sel and sel.value then
+          require("neogit").open({ cwd = sel.value.path, kind = "tab" })
+        end
+      end)
+      return true
+    end,
+  }):find()
+end
+
 return {
   {
     -- 行内Git变更指示器
@@ -187,6 +271,9 @@ return {
     cmd = "Neogit",
     keys = {
       { "<leader>gg", "<cmd>Neogit<CR>", desc = "打开Neogit" },
+      -- 选某个 worktree,直接看它(常是 claude agent 在 feat/xxx 上)的未提交改动、就地提交,
+      -- 无需 checkout、无需开 shell。详见 neogit_worktree_picker 上方注释。
+      { "<leader>gw", neogit_worktree_picker, desc = "选 worktree 看其改动(Neogit)" },
     },
     config = function(_, opts)
       -- 修复 neogit 上游 bug：被「其它 worktree」检出的分支在 diff/branch popup 里消失。
