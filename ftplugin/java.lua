@@ -24,6 +24,13 @@ local function jdtls_launcher_jar()
     return vim.fn.glob(mason .. "/share/jdtls/plugins/org.eclipse.equinox.launcher_*.jar")
 end
 
+-- 缺少语言服务器时保持 Java 文件可编辑，不向 java 传入空的 launcher 路径。
+local launcher = jdtls_launcher_jar()
+if launcher == "" or vim.fn.executable("java") == 0 then
+    vim.notify("Java LSP 未启动：请安装 Java 和 Mason 的 jdtls", vim.log.levels.WARN)
+    return
+end
+
 -- 获取当前项目的名称
 local project_name = vim.fn.fnamemodify(vim.fn.getcwd(), ":p:h:t")
 -- 设置工作区目录
@@ -77,7 +84,7 @@ local config = {
         "-jar",
         -- 自编译路径 /dev/java/eclipse.jdt.ls/org.eclipse.jdt.ls.product/target/repository/plugins/org.eclipse.equinox.launcher_1.6.900.v20240613-2009.jar
 
-        jdtls_launcher_jar(),
+        launcher,
         -- config 目录按运行平台自动选择（见顶部 jdtls_config_dir）。
         "-configuration",
         jdtls_config_dir(),
@@ -164,9 +171,7 @@ local config = {
             useBlocks = true, -- 使用代码块
         },
     },
-    -- 需要启动带有方法签名和占位符的自动补全,这里使用blink.cmp插件的能力，也可以使用cmp_nvim_lsp的能力，看你安装了哪个插件
-    -- capabilities = require("blink.cmp").get_lsp_capabilities(),
-    capabilities = require("cmp_nvim_lsp").capabilities,
+    capabilities = require("blink.cmp").get_lsp_capabilities(),
     flags = {
         allow_incremental_sync = true, -- 启用增量同步
     },

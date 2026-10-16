@@ -13,7 +13,8 @@ return {
         },
     },
     config = function()
-        require("mini.files").setup({
+        local MiniFiles = require("mini.files")
+        MiniFiles.setup({
             -- 窗口大小
             windows = {
                 width_focus = 60,
@@ -23,7 +24,29 @@ return {
 
         local nsMiniFiles = vim.api.nvim_create_namespace("mini_files_git")
         local autocmd = vim.api.nvim_create_autocmd
-        local _, MiniFiles = pcall(require, "mini.files")
+
+        autocmd("User", {
+            group = vim.api.nvim_create_augroup("MiniFiles_SetCwd", { clear = true }),
+            pattern = "MiniFilesBufferCreate",
+            callback = function(ev)
+                vim.keymap.set("n", "g=", function()
+                    -- 取当前面板目录而非光标下的子项，空目录也可以作为工作目录。
+                    local state = MiniFiles.get_explorer_state()
+                    local path = state and state.branch[state.depth_focus]
+                    if not path or vim.fn.isdirectory(path) == 0 then
+                        return
+                    end
+                    -- 先正常关闭，未同步的文件操作仍由 mini.files 提示处理。
+                    if MiniFiles.close() == false then
+                        return
+                    end
+                    -- :cd 改全局目录，并以新根重新打开，避免沿用旧的父级面板和历史分支。
+                    vim.cmd.cd({ args = { path } })
+                    MiniFiles.open(path, false)
+                    vim.notify("工作目录已切换：" .. vim.fn.getcwd(), vim.log.levels.INFO)
+                end, { buffer = ev.data.buf_id, desc = "切换工作目录并重定位资源面板" })
+            end,
+        })
 
         -- git 状态缓存
         local gitStatusCache = {}
@@ -71,6 +94,10 @@ return {
         -- 更新minifiles的git状态
         local function updateMiniWithGit(buf_id, gitStatusMap)
             vim.schedule(function()
+                -- 切换根目录会关闭旧面板，异步 Git 结果可能在关闭后才返回。
+                if not vim.api.nvim_buf_is_valid(buf_id) then
+                    return
+                end
                 local nlines = vim.api.nvim_buf_line_count(buf_id)
                 local cwd = vim.fn.getcwd()
                 local escapedcwd = escapePattern(cwd)

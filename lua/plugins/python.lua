@@ -15,7 +15,6 @@ return {
         },
         config = function()
             local dap = require("dap")
-            local dapui = require("dapui")
             local py = require("core.python")
 
             -- dap-python 默认用 $VIRTUAL_ENV / CONDA_PREFIX 找解释器；
@@ -26,7 +25,9 @@ return {
             dap_python.resolve_python = function()
                 return py.venv_python(py.root())
             end
-            dap_python.setup(py.venv_python(py.root()), {
+            -- 调试适配器使用独立安装，项目不必额外依赖 debugpy。
+            local adapter = vim.fn.exepath("debugpy-adapter")
+            dap_python.setup(adapter ~= "" and adapter or py.venv_python(py.root()), {
                 include_configs = true, -- 提供 file / file:args / attach 等默认配置
                 console = "integratedTerminal",
             })
@@ -39,18 +40,6 @@ return {
                 end
                 cfg.justMyCode = false -- 允许步入第三方库
                 cfg.cwd = "${workspaceFolder}"
-            end
-
-            -- 调试 UI：开始调试自动开，结束自动关。
-            dapui.setup()
-            dap.listeners.after.event_initialized["dapui"] = function()
-                dapui.open()
-            end
-            dap.listeners.before.event_terminated["dapui"] = function()
-                dapui.close()
-            end
-            dap.listeners.before.event_exited["dapui"] = function()
-                dapui.close()
             end
 
             require("nvim-dap-virtual-text").setup({

@@ -19,8 +19,6 @@ return {
         "--Python-kinds=+f",  -- 包含函数
         "--Python-kinds=+m",  -- 包含方法
         "--Python-kinds=+v",  -- 包含变量
-        "--Python-kinds=+l",  -- 包含局部变量
-        "--Python-kinds=+d",  -- 包含装饰器
       }
       
       -- 设置自动生成标签
@@ -30,7 +28,6 @@ return {
       
       -- 设置标签文件位置 + 生成后处理命令（统一在此一处配，别散落）
       vim.g.gutentags_ctags_tagfile = ".tags"
-      vim.g.gutentags_ctags_postprocess_cmd = "ctags --sort=yes --fields=+l"
 
       -- 设置缓存目录
       -- 用 stdpath("cache") 而非写死 ~/.cache/nvim：缓存目录在不同 OS 上位置不同

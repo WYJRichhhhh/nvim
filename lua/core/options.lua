@@ -65,8 +65,7 @@ opt.autoread = true
 -- 调低没有"频繁写交换文件"的副作用，顺带让 autocmds.lua 的 :checktime、LSP、gitsigns 更跟手。
 opt.updatetime = 250
 
--- 设置默认的shell为zsh
-opt.shell = "zsh"
+-- 沿用系统 shell，避免未安装 zsh 的机器无法打开终端。
 
 -- 允许夸会话撤销 禁用交换文件
 opt.undofile = true
@@ -81,5 +80,3 @@ opt.guicursor = {
     "a:blinkwait700-blinkoff400-blinkon250-Cursor/lCursor",
     "sm:block-blinkwait175-blinkoff150-blinkon175",
 }
-
-require("telescope").load_extension("ui-select")

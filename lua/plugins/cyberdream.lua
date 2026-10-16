@@ -13,8 +13,8 @@ return {
                 terminal_colors = false, -- 终端颜色
                 cache = false, -- 缓存
                 borderless_telescope = { border = false, style = "flat" }, -- 无边框的telescope
-                theme = { variant = "light" }, -- 主题
                 extensions = { telescope = true }, -- 扩展
+                variant = "light", -- 主题变体：light / default(深色) / auto(跟随 background)
             })
 
             vim.cmd("colorscheme cyberdream-light") -- 设置vim主题

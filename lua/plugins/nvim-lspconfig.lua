@@ -16,21 +16,18 @@ return {
     event = { "BufReadPre", "BufNewFile" },
     dependencies = {
         -- LSP 管理
-        -- https://github.com/williamboman/mason.nvim
-        { "williamboman/mason.nvim" },
-        -- https://github.com/williamboman/mason-lspconfig.nvim
-        { "williamboman/mason-lspconfig.nvim" },
+        -- https://github.com/mason-org/mason.nvim
+        { "mason-org/mason.nvim" },
+        -- https://github.com/mason-org/mason-lspconfig.nvim
+        { "mason-org/mason-lspconfig.nvim" },
 
         -- LSP补全集成
-        { "hrsh7th/cmp-nvim-lsp" },
+        { "saghen/blink.cmp" },
 
         -- LSP 的状态更新提示，体验更好
         -- https://github.com/j-hui/fidget.nvim
         { "j-hui/fidget.nvim", opts = {} },
 
-        -- 额外的 lua 配置，让写 nvim 配置体验大幅提升
-        -- https://github.com/folke/neodev.nvim
-        { "folke/neodev.nvim" },
         {
             "folke/lazydev.nvim",
             ft = "lua",
@@ -42,14 +39,10 @@ return {
         },
         "Bilal2453/luvit-meta",
         "smiteshp/nvim-navic",
-        -- { "saghen/blink.cmp" },
     },
     config = function()
-        -- 全局默认：把 nvim-cmp 的补全能力合并进“所有” server。
-        -- vim.lsp.config("*", …) 是最低优先级的基底，各 server 配置会叠在其上。
-        -- （旧配置里这段 capabilities 其实从未生效——它只在 opts.servers 上循环，
-        --  而本插件 spec 没有定义 opts，循环是空操作；迁移时顺手修正。）
-        local capabilities = require("cmp_nvim_lsp").default_capabilities()
+        -- 所有语言服务器共用 blink 的补全能力，Java 的独立启动入口同样使用它。
+        local capabilities = require("blink.cmp").get_lsp_capabilities()
         vim.lsp.config("*", {
             capabilities = capabilities,
         })
@@ -234,12 +227,8 @@ return {
         vim.lsp.config("rust_analyzer", {
             settings = {
                 ["rust-analyzer"] = {
-                    checkOnSave = {
-                        command = "clippy",
-                    },
-                    cargo = {
-                        loadOutDirsFromCheck = true,
-                    },
+                    checkOnSave = true,
+                    check = { command = "clippy" },
                 },
             },
         })
@@ -249,8 +238,10 @@ return {
         vim.lsp.enable({
             -- 无需额外配置（用 lsp/*.lua 默认）：
             "html",
+            "cssls",
+            "ts_ls",
+            "bashls",
             "jsonls",
-            "nil_ls",
             "ols",
             "tailwindcss",
             "taplo",
@@ -263,6 +254,10 @@ return {
             "ruff",
             "rust_analyzer",
         })
+
+        if vim.fn.executable("nil") == 1 then
+            vim.lsp.enable("nil_ls")
+        end
 
         -- 全局配置所有 LSP 浮动预览弹窗（如 hover、签名帮助等）
         local open_floating_preview = vim.lsp.util.open_floating_preview

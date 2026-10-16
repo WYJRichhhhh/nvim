@@ -5,6 +5,10 @@ return {
     config = function()
         local resession = require("resession")
         resession.setup({})
+        -- 无界面启动用于检查和脚本，不应覆盖日常编辑会话。
+        if #vim.api.nvim_list_uis() == 0 then
+            return
+        end
         vim.api.nvim_create_autocmd("VimEnter", {
             callback = function()
                 -- 仅在不带任何参数启动 nvim 时才自动加载会话

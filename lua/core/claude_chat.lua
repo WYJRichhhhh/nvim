@@ -230,8 +230,7 @@ function M.translate()
     interact({ title = "翻译", stdin = sel, instruction = TRANSLATE_PROMPT })
 end
 
--- 以当前文件全文为上下文提问(普通模式)。用 vim.ui.input 弹输入框(已装 dressing.nvim,
--- 观感是浮窗),用户输入问题后,把整文件内容 + 文件名/类型走 stdin、问题走指令。
+-- 以当前文件全文为上下文提问，Snacks 输入浮窗默认进入插入模式以支持中文输入。
 function M.ask()
     local content = table.concat(vim.api.nvim_buf_get_lines(0, 0, -1, false), "\n")
     if vim.trim(content) == "" then
@@ -240,12 +239,7 @@ function M.ask()
     end
     local name = vim.fn.expand("%:t")
     local ft = vim.bo.filetype
-    -- start_mode="insert":仅这一次让 dressing 输入框开在插入模式。全局配置是
-    -- start_in_insert=false(输入框默认停普通模式),但那样 IME 中文在普通模式不回显,
-    -- 回车又拿到空串、走不到结果框。dressing 默认不读单次 opts,故在 dressing.lua 配了
-    -- get_config 钩子:仅当调用方显式传 start_mode 时才覆盖,这里据此按调用切到 insert,
-    -- 既修中文输入、又不动全局偏好。
-    vim.ui.input({ prompt = "针对当前文件提问: ", start_mode = "insert" }, function(q)
+    vim.ui.input({ prompt = "针对当前文件提问: " }, function(q)
         if not q or vim.trim(q) == "" then
             return
         end

@@ -1,3 +1,0 @@
-return {
-  'jmcantrell/vim-virtualenv',
-}

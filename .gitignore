@@ -8,3 +8,6 @@ lua/local.lua
 # ctags 生成的标签文件（gutentags 会按机器自动生成，见 lua/plugins/gutentags.lua）。
 tags
 .tags
+
+# Neovim 无法写入默认日志目录时产生的本地日志。
+nvim.log

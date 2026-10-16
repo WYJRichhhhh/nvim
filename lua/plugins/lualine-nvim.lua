@@ -19,22 +19,13 @@ return {
                 end)
             end,
         })
-        -- 为copilot状态设置颜色
-        local copilot_colors = {
-            [""] = utils.get_hlgroup("Comment"),
-            ["Normal"] = utils.get_hlgroup("Comment"),
-            ["Warning"] = utils.get_hlgroup("DiagnosticError"),
-            ["InProgress"] = utils.get_hlgroup("DiagnosticWarn"),
-        }
-
         -- 为不同的文件类型设置图标
         local filetype_map = {
             lazy = { name = "lazy.nvim", icon = "💤" },
             minifiles = { name = "minifiles", icon = "🗂️ " },
-            toggleterm = { name = "terminal", icon = "🐚" },
+            snacks_terminal = { name = "terminal", icon = "🐚" },
             mason = { name = "mason", icon = "🔨" },
             TelescopePrompt = { name = "telescope", icon = "🔍" },
-            ["copilot-chat"] = { name = "copilot", icon = "🤖" },
         }
 
         return {
@@ -173,25 +164,7 @@ return {
                         cond = require("lazy.status").has_updates,
                         color = utils.get_hlgroup("String"),
                     },
-                    -- 显示copilot状态
-                    {
-                        function()
-                            local icon = " "
-                            local status = require("copilot.api").status.data
-                            return icon .. (status.message or "")
-                        end,
-                        cond = function()
-                            local ok, clients = pcall(vim.lsp.get_clients, { name = "copilot", bufnr = 0 })
-                            return ok and #clients > 0
-                        end,
-                        color = function()
-                            if not package.loaded["copilot"] then
-                                return
-                            end
-                            local status = require("copilot.api").status.data
-                            return copilot_colors[status.status] or copilot_colors[""]
-                        end,
-                    },
+
                     -- 显示Git差异
                     { "diff" },
                 },

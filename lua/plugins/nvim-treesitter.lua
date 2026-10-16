@@ -29,7 +29,7 @@ return {
             "bash", "bicep", "c_sharp", "gitignore", "go", "gomod", "gosum",
             "gowork", "html", "http", "json", "lua", "luadoc", "luap",
             "markdown", "markdown_inline", "nix", "odin", "powershell",
-            "regex", "rust", "templ", "toml", "vimdoc", "yaml", "java",
+            "python", "javascript", "typescript", "tsx", "css", "regex", "rust", "templ", "toml", "vimdoc", "yaml", "java",
         }
         local installed = ts.get_installed()
         local missing = vim.tbl_filter(function(lang)

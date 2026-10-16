@@ -15,6 +15,7 @@ return {
             end,
         },
         { "rcarriga/nvim-notify" },
+        { "nvim-telescope/telescope-ui-select.nvim" },
         -- 标签页选择器:为 <leader>ft 提供「在打开的 tab 间查找/切换」(类比 fb 选 buffer)。
         { "LukasPietzschmann/telescope-tabs" },
     },
@@ -75,6 +76,7 @@ return {
         })
         
         -- 加载扩展
+        telescope.load_extension("ui-select")
         telescope.load_extension("notify")
         -- fzf-native 是 C 扩展，靠 `make` 编译（见 dependencies 里的 cond）。
         -- 没装 make 的机器上它不会编译，load 会失败——用 pcall 兜底优雅退回到

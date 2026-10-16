@@ -31,29 +31,33 @@ function M.root(bufnr_or_path)
     if path == nil or path == "" then
         return vim.uv.cwd()
     end
-    return vim.fs.root(path, M.root_markers) or vim.fs.dirname(path)
+    -- 按标记优先级逐项搜索，避免附近的 .git 抢过上级 pyproject.toml。
+    for _, marker in ipairs(M.root_markers) do
+        local root = vim.fs.root(path, marker)
+        if root then
+            return root
+        end
+    end
+    return vim.fs.dirname(path)
 end
 
 --- 为给定的项目根解析出应当使用的 Python 解释器。
---- 优先级：显式激活的 venv -> 项目内的 .venv（uv 默认）-> PATH 上的 python3
+--- 优先项目内 .venv，再退回显式激活环境和系统 Python，避免跨项目串环境。
 --- @param root? string 项目根
---- @return string python 绝对路径，或 "python3"
+--- @return string python
 function M.venv_python(root)
-    -- 1. 你手动激活过的 venv 永远优先（说明这是你刻意指定的）。
-    local activated = vim.env.VIRTUAL_ENV
-    if activated and activated ~= "" then
-        return vim.fs.joinpath(activated, "bin", "python")
-    end
-    -- 2. uv（以及 `python -m venv`）会在项目根下创建 .venv。
-    if root then
-        local venv = vim.fs.joinpath(root, ".venv", "bin", "python")
-        if vim.uv.fs_stat(venv) then
-            return venv
+    local suffix = jit.os == "Windows" and { "Scripts", "python.exe" } or { "bin", "python" }
+    local function interpreter(dir)
+        if not dir or dir == "" then
+            return nil
         end
+        local path = vim.fs.joinpath(dir, unpack(suffix))
+        return vim.fn.executable(path) == 1 and path or nil
     end
-    -- 3. 兜底：PATH 上的 python3。
-    local sys = vim.fn.exepath("python3")
-    return sys ~= "" and sys or "python3"
+    local project = root and interpreter(vim.fs.joinpath(root, ".venv"))
+    local activated = interpreter(vim.env.VIRTUAL_ENV)
+    local system = vim.fn.exepath("python3")
+    return project or activated or (system ~= "" and system or "python3")
 end
 
 return M

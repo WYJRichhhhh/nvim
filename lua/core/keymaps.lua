@@ -197,8 +197,9 @@ keymap.set("n", "gt", "<cmd>lua require('telescope.builtin').lsp_type_definition
 keymap.set("n", "gr", "<cmd>lua require('telescope.builtin').lsp_references() <CR>", { desc = "查找引用" })
 keymap.set("n", "gs", "<cmd>lua vim.lsp.buf.signature_help()<CR>", { desc = "显示签名帮助" })
 keymap.set("n", "rn", "<cmd>lua vim.lsp.buf.rename()<CR>", { desc = "重命名符号" })
-keymap.set("n", "gf", "<cmd>lua vim.lsp.buf.format({async = true})<CR>", { desc = "格式化代码" })
-keymap.set("v", "gf", "<cmd>lua vim.lsp.buf.format({async = true})<CR>", { desc = "格式化选中的代码" })
+keymap.set({ "n", "v" }, "gf", function()
+    require("conform").format({ async = true, lsp_format = "fallback" })
+end, { desc = "格式化代码" })
 keymap.set("n", "ga", "<cmd>lua vim.lsp.buf.code_action()<CR>", { desc = "显示代码操作" })
 -- 使用telescope的的诊断
 -- keymap.set("n", "<leader>gl", "<cmd>lua vim.diagnostic.open_float()<CR>", { desc = "打开诊断浮动窗口" })
@@ -236,7 +237,7 @@ keymap.set("n", "<leader>dr", function() dap().repl.toggle() end, { desc = "调�
 keymap.set("n", "<leader>dl", function() dap().run_last() end, { desc = "调试: 运行上次" })
 keymap.set("n", "<leader>dx", function() dap().terminate() end, { desc = "调试: 终止" })
 keymap.set("n", "<leader>du", function()
-    -- dapui.toggle 偶发 Invalid buffer id，pcall 兜底并重试 open（patch 见 plugins/dapui-patch.lua）。
+    -- 窗口切换失败时给出提示并尝试重新打开。
     local ok, err = pcall(function() require("dapui").toggle() end)
     if not ok then
         vim.notify("无法切换调试界面: " .. tostring(err), vim.log.levels.WARN)
@@ -249,13 +250,13 @@ keymap.set("n", "<leader>dd", function()
     -- 获取当前文件路径和类型
     local file_path = vim.fn.expand("%:p")
     local file_type = vim.bo.filetype
-    
+
     -- 使用 pcall 包装所有 DAP 相关调用，避免错误传播
     local status, err = pcall(function()
         -- 如果不是 Python 文件，尝试使用标准 dap 调试
         if file_type ~= "python" then
             -- 如果有可用的调试配置，使用它
-            if #require("dap").configurations[file_type] > 0 then
+            if #(require("dap").configurations[file_type] or {}) > 0 then
                 require("dap").continue()
                 vim.defer_fn(function()
                     if package.loaded["dapui"] then
@@ -271,7 +272,7 @@ keymap.set("n", "<leader>dd", function()
                 return
             end
         end
-        
+
         -- Python 文件特殊处理
         -- 读取文件内容
         local file = io.open(file_path, "r")
@@ -279,20 +280,17 @@ keymap.set("n", "<leader>dd", function()
             vim.notify("无法读取文件内容", vim.log.levels.ERROR)
             return
         end
-        
+
         local content = file:read("*all")
         file:close()
-        
-        -- 获取当前激活的 Python 解释器
-        local python_path = vim.env.VIRTUAL_ENV 
-            and vim.fn.expand(vim.env.VIRTUAL_ENV .. "/bin/python")
-            or "python"
-        
-        -- 配置环境变量
+
+        local py = require("core.python")
+        local root = py.root(file_path)
+        local python_path = py.venv_python(root)
         local env = {
-            PYTHONPATH = vim.fn.getcwd() .. ":" .. (vim.env.PYTHONPATH or ""),
+            PYTHONPATH = root .. (jit.os == "Windows" and ";" or ":") .. (vim.env.PYTHONPATH or ""),
         }
-        
+
         -- 检测应用类型
         local config = {
             type = "python",
@@ -300,12 +298,12 @@ keymap.set("n", "<leader>dd", function()
             name = "Python: Current File",
             program = file_path,
             python = python_path,
-            cwd = vim.fn.getcwd(),
+            cwd = root,
             env = env,
             justMyCode = false,
             console = "integratedTerminal",
         }
-        
+
         -- 检查是否是 Flask 应用
         if content:match("from%s+flask%s+import") or content:match("import%s+flask") then
             config.name = "Flask"
@@ -316,15 +314,15 @@ keymap.set("n", "<leader>dd", function()
         elseif content:match("from%s+fastapi%s+import") or content:match("import%s+fastapi") then
             config.name = "FastAPI"
             config.module = "uvicorn"
-            config.args = { 
-                vim.fn.fnamemodify(file_path, ":r"):gsub("/", ".") .. ":app", 
-                "--reload", 
-                "--host", "0.0.0.0", 
-                "--port", "8000" 
+            config.args = {
+                vim.fs.relpath(root, file_path):gsub("%.py$", ""):gsub("[/\\]", ".") .. ":app",
+                "--reload",
+                "--host", "0.0.0.0",
+                "--port", "8000"
             }
             config.program = nil -- 使用模块时不需要 program
         end
-        
+
         -- 启动调试前确保存在断点，否则程序会立即执行完毕
         local breakpoints = require("dap.breakpoints").get()
         local has_breakpoints = false
@@ -334,7 +332,7 @@ keymap.set("n", "<leader>dd", function()
                 break
             end
         end
-        
+
         if not has_breakpoints then
             -- 提示用户设置断点
             local answer = vim.fn.confirm("没有断点设置，程序可能会立即执行完毕。是否继续？\n提示：按 <leader>db 设置断点", "&是\n&否", 2)
@@ -342,10 +340,10 @@ keymap.set("n", "<leader>dd", function()
                 return
             end
         end
-        
+
         -- 启动调试
         require("dap").run(config)
-        
+
         -- 确保 UI 打开
         vim.defer_fn(function()
             local ui_status, ui_err = pcall(function()
@@ -362,7 +360,7 @@ keymap.set("n", "<leader>dd", function()
             end
         end, 100)
     end)
-    
+
     if not status then
         vim.notify("调试启动失败: " .. tostring(err), vim.log.levels.ERROR)
     end
@@ -372,27 +370,21 @@ end, { desc = "调试: 调试当前文件" })
 keymap.set("n", "<leader>rp", function()
     local file_path = vim.fn.expand("%:p")
     local file_type = vim.bo.filetype
-    
+
     if file_type ~= "python" then
         vim.notify("当前文件不是 Python 文件", vim.log.levels.ERROR)
         return
     end
-    
-    local terminal = require("nvterm.terminal")
-    local cmd = string.format("python %s", file_path)
-    terminal.send(cmd, "float")
+
+    local py = require("core.python")
+    -- 参数列表直接传给进程，文件名含空格时也无需拼 shell 命令。
+    require("snacks").terminal.open({ py.venv_python(py.root(file_path)), file_path }, {
+        cwd = py.root(file_path),
+        auto_close = false,
+        win = { position = "float", width = 0.8, height = 0.8, border = "rounded" },
+    })
 end, { desc = "运行当前 Python 文件" })
 
--- nvterm ----------------------------------------------------------------------
-keymap.set({ "t", "n" }, "<A-i>", function()
-    require("nvterm.terminal").toggle("float")
-end, { desc = "Toggle悬浮终端" })
-keymap.set({ "t", "n" }, "<A-h>", function()
-    require("nvterm.terminal").toggle("horizontal")
-end, { desc = "Toggle水平终端" })
-keymap.set({ "t", "n" }, "<A-v>", function()
-    require("nvterm.terminal").toggle("vertical")
-end, { desc = "Toggle垂直终端" })
 -- 宏 --------------------------------------------------------------------------
 -- q 还给原生宏录制（q{寄存器} 开始/结束录制），不再占作他用。
 -- 重放：@{寄存器} 执行一次，@@ 重复上次。原生键已够短，无需再加映射。

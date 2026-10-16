@@ -1,7 +1,7 @@
 return {
-    "williamboman/mason.nvim",
+    "mason-org/mason.nvim",
     dependencies = {
-        "williamboman/mason-lspconfig.nvim",
+        "mason-org/mason-lspconfig.nvim",
     },
     cmd = "Mason",
     event = "BufReadPre",
@@ -34,18 +34,14 @@ return {
                 "jsonls",
                 "yamlls",
             },
-            automatic_installation = true,
             -- 本配置里所有 LSP 都在 nvim-lspconfig.lua 显式 setup，
             -- 新版 mason-lspconfig 默认还会再 vim.lsp.enable() 一遍已安装的 server，
             -- 导致 ruff/pyright 等被启动两次（出现重复 client）。关掉它。
             automatic_enable = false,
         })
 
-        local linux_only_pacakages = {
-            "nil",
-        }
-
         local mason_packages = {
+            "debugpy",
             "bicep-lsp",
             "docker-compose-language-service",
             "dockerfile-language-server",
@@ -66,18 +62,18 @@ return {
             "yaml-language-server",
         }
 
-        if vim.fn.has("win32") == 0 then
-            -- mason_packages 与 linux_only_pacakages 都是数组(list)。
-            -- tbl_extend 按 key 合并，会用 linux 包的 [1] 覆盖 mason_packages 的 [1]，
-            -- 导致 bicep-lsp 丢失、列表被截断。用 list_extend 做真正的追加。
-            vim.list_extend(mason_packages, linux_only_pacakages)
+        -- nil 的构建会调用 nix；未安装 Nix 时每次打开文件都会反复编译失败。
+        if vim.fn.executable("nix") == 1 then
+            table.insert(mason_packages, "nil")
         end
 
         local mr = require("mason-registry")
         local function ensure_installed()
             for _, tool in ipairs(mason_packages) do
-                local p = mr.get_package(tool)
-                if not p:is_installed() then
+                local ok, p = pcall(mr.get_package, tool)
+                if not ok then
+                    vim.notify("Mason 找不到工具: " .. tool, vim.log.levels.WARN)
+                elseif not p:is_installed() then
                     p:install()
                 end
             end
@@ -88,44 +84,5 @@ return {
             ensure_installed()
         end
 
-        -- vim.api.nvim_create_user_command("SetupPythonTools", function()
-        --   local tools = {
-        --     "pyright",
-        --     "ruff",
-        --     "black",
-        --     "isort",
-        --     "debugpy",
-        --   }
-        --
-        --   local registry = require("mason-registry")
-        --
-        --   vim.notify("正在安装Python开发工具...", vim.log.levels.INFO)
-        --
-        --   for _, tool in ipairs(tools) do
-        --     if not registry.is_installed(tool) then
-        --       vim.notify("安装 " .. tool, vim.log.levels.INFO)
-        --       local pkg = registry.get_package(tool)
-        --       pkg:install()
-        --     else
-        --       vim.notify(tool .. " 已安装", vim.log.levels.INFO)
-        --     end
-        --   end
-        --
-        --   vim.notify("安装Python pip包...", vim.log.levels.INFO)
-        --   local python_packages = {
-        --     "debugpy",  -- 调试支持
-        --   }
-        --
-        --   local venv = os.getenv("VIRTUAL_ENV")
-        --   local pip_cmd = venv and venv .. "/bin/pip" or "pip"
-        --
-        --   for _, pkg in ipairs(python_packages) do
-        --     vim.fn.system(pip_cmd .. " install -U " .. pkg)
-        --   end
-        --
-        --   vim.notify("Python开发工具安装完成！请重启Neovim以激活所有功能。", vim.log.levels.INFO)
-        -- end, {})
-
-        -- vim.keymap.set("n", "<leader>pm", ":SetupPythonTools<CR>", { desc = "安装Python工具" })
     end,
 }

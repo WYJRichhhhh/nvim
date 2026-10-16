@@ -118,8 +118,6 @@ return {
                     ["vim.lsp.util.convert_input_to_markdown_lines"] = false,
                     -- 用 Noice 覆盖 LSP markdown formatter
                     ["vim.lsp.util.stylize_markdown"] = false,
-                    -- 用 Noice 覆盖 cmp 文档（需要上面几项一起开启才生效）
-                    ["cmp.entry.get_documentation"] = false,
                 },
                 hover = {
                     enabled = false,
@@ -132,7 +130,6 @@ return {
                     auto_open = {
                         enabled = true,
                         trigger = true, -- 输入 LSP 的触发字符时自动弹出签名帮助
-                        luasnip = true, -- 跳到 Luasnip 插入节点时弹出签名帮助
                         throttle = 50, -- LSP 签名帮助请求去抖 50ms
                     },
                     view = nil, -- 为 nil 时使用 documentation 的默认值
@@ -177,7 +174,7 @@ return {
                 -- noice 会尝试避开已有的浮动窗口。
                 enabled = true, -- 可在此关闭该行为
                 -- 在这里加入不应触发 smart move 的 filetype。
-                excluded_filetypes = { "cmp_menu", "cmp_docs", "notify" },
+                excluded_filetypes = { "blink-cmp-menu", "blink-cmp-documentation", "notify" },
             },
             presets = {
                 -- 把某个 preset 设为 true 即可启用，也可设为一个表来覆盖该 preset 的配置；

@@ -2,7 +2,7 @@
 return {
   "stevearc/conform.nvim",
   -- 在打开文件时运行
-  event = "BufReadPre",
+  event = { "BufReadPre", "BufNewFile" },
   config = function()
     -- 全局变量
     vim.g.disable_autoformat = false
@@ -14,6 +14,9 @@ return {
         go = { "goimports_reviser", "gofmt", "golines" },
         html = { "prettier" },
         javascript = { "prettier" },
+        javascriptreact = { "prettier" },
+        typescript = { "prettier" },
+        typescriptreact = { "prettier" },
         json = { "prettier" },
         lua = { "stylua" },
         markdown = { "prettier" },
@@ -47,6 +50,8 @@ return {
       formatters = {
         goimports_reviser = {
           command = "goimports-reviser",
+          -- 该工具读取文件而非 stdin；Conform 用临时文件传入未保存内容。
+          stdin = false,
           args = { "-output", "stdout", "$FILENAME" },
         },
       },

@@ -6,5 +6,6 @@ return {
     dependencies = {
         -- https://github.com/mfussenegger/nvim-dap
         "mfussenegger/nvim-dap",
+        "saghen/blink.cmp",
     },
 }
