@@ -124,6 +124,10 @@ return {
     -- 行内Git变更指示器
     "lewis6991/gitsigns.nvim",
     event = { "BufReadPre", "BufNewFile" },
+    config = function(_, opts)
+      require("core.gitsigns_guard").setup()
+      require("gitsigns").setup(opts)
+    end,
     opts = {
       signs = {
         add = { text = "│" },

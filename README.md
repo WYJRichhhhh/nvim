@@ -139,11 +139,12 @@ Python 项目优先使用项目内的 `.venv`。LSP 和调试共用 [core.python
 | --- | --- |
 | [Vim 和 Neovim 心智模型](docs/vim-mental-model.md) | buffer、窗口、编辑语法、状态、LSP 与运行时机制 |
 | [init.lua 启动配置详解](docs/init-lua-guide.md) | Lua 基础、Neovim 接口、require、lazy 配置和插件生命周期 |
+| [Markdown 与 Mermaid](docs/markdown.md) | 内嵌图形、浮动预览、依赖安装与 tmux 排查 |
 | [三端统一主题](docs/dev-theme.md) | 26 套主题实时预览、透明度、安装与恢复 |
 | [Python 开发指南](docs/python_development.md) | 早期 Python 工作流记录；部分工具、测试集成和快捷键待同步，以当前配置为准 |
 | [Git 工具使用指南](docs/git_tools.md) | Git 变更、差异和历史浏览的操作参考，具体键位以当前插件配置为准 |
 
-Codex 修改跟踪已在本配置开启，需要 Node.js 22+ 及支持 App Server 的 Codex（已验证 0.163.0）。右侧保留原生 TUI，左侧查看修改；阅读代码时保留视图，回到 Agent 后自动跟到最新修改；开始编辑才暂停自动跟随，不覆盖未保存内容。CLI 输入状态先按 `Ctrl-\`、`Ctrl-n`，再使用上述普通模式快捷键；`:Agent help` 有完整指南。Claude 仍使用终端模式。Codex 同时用 Git 快照补充脚本修改，支持同项目 worktree；旧任务可用 `<leader>ag` 检查当前差异。tmux zoom 自动重算窗口，Agent 聚焦时接收滚轮、离开后恢复原鼠标设置。
+Codex 和 Claude 修改跟踪已在本配置开启：都需要 Node.js 22+；Codex 使用 App Server（已验证 0.163.0），Claude 使用会话专用 Hooks（已验证 2.1.210）并需要 Git。右侧保留原生 TUI，左侧查看修改；阅读代码时保留视图，回到 Agent 后自动跟到最新修改；开始编辑才暂停自动跟随，不覆盖未保存内容。CLI 输入状态先按 `Ctrl-\`、`Ctrl-n`，再使用上述普通模式快捷键；`:Agent help` 有完整指南。Claude 需允许 Hooks；非 Git 目录只跟踪已接入文件工具的修改。两种后端都可用 Git 快照补充脚本修改，支持同项目 worktree；旧任务可用 `<leader>ag` 检查当前差异。tmux zoom 自动重算窗口，Agent 聚焦时接收滚轮、离开后恢复原鼠标设置。
 
 Agent 已独立发布为 [agent.nvim](https://github.com/WYJRichhhhh/agent.nvim)，详细配置、shell/目录继承与单会话规则见 [中文说明](https://github.com/WYJRichhhhh/agent.nvim/blob/main/README.zh-CN.md)。本机优先加载与 nvim 同级的插件 checkout，其他机器由 lazy.nvim 安装。旧版单次 Claude 问答与翻译入口已移除。
 

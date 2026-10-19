@@ -35,8 +35,9 @@ return {
     opts = {
         backend = "auto",
         terminal = { hide_key = "<M-a>" },
-        -- 原生 Codex TUI + 结构化修改事件；需要 Node.js 22+。
+        -- 保留原生 TUI：Codex 使用 App Server，Claude 使用会话级 Hooks。
         codex = { enabled = true },
+        claude = { enabled = true },
         window = { layout = "right", width = 0.42 },
         review = { follow = true },
     },

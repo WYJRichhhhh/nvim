@@ -1,4 +1,4 @@
--- 只启用输入框和终端，继续使用现有的搜索、通知和文件管理配置。
+-- 输入框、终端和 Markdown 图像；继续使用现有的搜索、通知和文件管理配置。
 local layouts = {
     { "<A-i>", 1, { position = "float", width = 0.8, height = 0.8, border = "rounded" }, "切换浮动终端" },
     { "<A-h>", 2, { position = "bottom", height = 0.3 }, "切换水平终端" },
@@ -21,9 +21,12 @@ return {
     lazy = false,
     priority = 1000,
     keys = keys,
-    opts = {
-        -- 输入框直接进入插入模式，中文输入和重命名都可以立即输入。
-        input = { enabled = true, win = { border = "rounded" } },
-        terminal = { enabled = true },
-    },
+    opts = function()
+        return {
+            -- 输入框直接进入插入模式，中文输入和重命名都可以立即输入。
+            input = { enabled = true, win = { border = "rounded" } },
+            terminal = { enabled = true },
+            image = require("core.markdown_images").options(),
+        }
+    end,
 }
