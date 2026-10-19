@@ -24,7 +24,7 @@
 --   <leader> 后首字母按「功能英文首字母」分组，同类聚拢、异类不混：
 --     f 查找(find)   g Git    d 调试(debug)   s 窗口(split)
 --     w 保存(write)  t 标签/主题   n 通知    c diff/合并   F 跳转(Hop)   o 整理(organize)
---     y 复制路径(yank)   a AI(claude 交互)
+--     y 复制路径(yank)   a AI Agent（Claude Code / Codex）
 --   加新键先问「它属于哪一类」，落到对应前缀，并在 plugins/which-key.lua 标注分组。
 --   不属于任何现有类时，宁可新开一个语义清晰的前缀，也别塞进不相干的前缀凑数
 --   （曾把 HopWord 误放进 <leader>f 查找区，已移回跳转区 <leader>Fw）。
@@ -65,7 +65,7 @@ keymap.set("i", "<C-j>", "<Down>", { desc = "光标下移" }) -- 下移
 keymap.set("i", "<C-k>", "<Up>", { desc = "光标上移" }) -- 上移
 keymap.set("n", "<leader>wq", ":wq<CR>", { desc = "保存并退出" }) -- 保存并退出
 keymap.set("n", "<leader>wa", ":wa<CR>", { desc = "保存全部" }) -- 保存全部
-keymap.set("n", "<leader>qq", ":q!<CR>", { desc = "退出不保存" }) -- 退出不保存
+keymap.set("n", "<leader>qq", "<cmd>qa!<CR>", { desc = "退出整个 Neovim（不保存）" })
 keymap.set("n", "<leader>ww", ":w<CR>", { desc = "保存当前buffer" }) -- 保存
 -- 用系统默认程序打开光标下的 URL。macOS 用 open，Linux 用 xdg-open，Windows 用 start。
 -- 旧写法 `:!open` 是 macOS 专属，换到 Linux 会直接报命令找不到。
@@ -173,6 +173,10 @@ keymap.set("n", "<leader>fn", function()
     -- 由 telescope 的 notify 扩展(见 plugins/telescope-nvim.lua 里的 load_extension)渲染。
     require("telescope").extensions.notify.notify()
 end, { desc = "查找通知历史" })
+
+keymap.set("n", "<leader>fr", function()
+    require("telescope.builtin").registers()
+end, { desc = "查看寄存器" })
 
 -- LSP -------------------------------------------------------------------------
 -- 删除 Neovim 0.11+ 内置的 gr* 默认映射家族(grr/gri/gra/grn/grt/grx)。
@@ -428,16 +432,7 @@ end, { desc = "行内单字符向后跳转(兼匹配全角标点)" })
 -- 不同模式,互不影响。逻辑与全/半角对应表收敛在 core/cjk_punct.lua。
 require("core.cjk_punct").setup()
 
--- copilot-chat ----------------------------------------------------------------
--- CopilotChat 插件已停用（见 disable_plugins/），相关快捷键随之移除。
-
--- AI（claude 即问即答）---------------------------------------------------------
--- 调本机 claude CLI 做一次性交互（无多轮/无历史）,实现见 core/claude_chat.lua。
--- 新开 <leader>a 命名空间（AI/ask）:不属于查找/Git 等任何现有类,按准则三宁可新开。
---   at 可视模式:把选中文本当作要翻译的词,弹词汇讲解卡片(音标/词根/例句等)。
---   aa 普通模式:以当前文件全文为上下文,弹输入框提问,即问即答。
-keymap.set("v", "<leader>at", function() require("core.claude_chat").translate() end, { desc = "AI: 翻译选中内容" })
-keymap.set("n", "<leader>aa", function() require("core.claude_chat").ask() end, { desc = "AI: 就当前文件提问" })
+-- AI Agent 的快捷键由 plugins/agent.lua 管理，终端隐藏不会结束会话。
 
 -- 缓冲区 ----------------------------------------------------------------------
 -- stylua: ignore start

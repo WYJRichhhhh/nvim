@@ -11,3 +11,7 @@ tags
 
 # Neovim 无法写入默认日志目录时产生的本地日志。
 nvim.log
+
+# Python 工具运行时缓存。
+__pycache__/
+*.pyc

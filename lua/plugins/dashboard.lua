@@ -5,8 +5,15 @@ return {
     event = "VimEnter",
     dev = true,
     config = function()
-        -- 设置前景色为白色
-        vim.cmd("highlight DashboardHeader guifg=#ffffff")
+        -- 跟随主题，避免浅色背景上固定白字。
+        local function header_highlight()
+            vim.api.nvim_set_hl(0, "DashboardHeader", { link = "Title" })
+        end
+        header_highlight()
+        vim.api.nvim_create_autocmd("ColorScheme", {
+            group = vim.api.nvim_create_augroup("DashboardTheme", { clear = true }),
+            callback = header_highlight,
+        })
         require("dashboard").setup({
             theme = "hyper",
             -- 不隐藏状态栏

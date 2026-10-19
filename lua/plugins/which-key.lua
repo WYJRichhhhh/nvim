@@ -15,7 +15,7 @@ return {
         -- <leader>e 兼有 minifiles(ef) 与 Java 重构-提取(ev/ec/em)，buffer 内才出现，统标「重构/文件」。
         wk.add({
             mode = { "n", "v" },
-            { "<leader>a", group = "AI(claude)" },
+            { "<leader>a", group = "AI Agent" },
             { "<leader>c", group = "Diff/Mason" },
             { "<leader>d", group = "调试" },
             { "<leader>e", group = "重构/文件" },

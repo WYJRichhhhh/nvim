@@ -32,9 +32,9 @@ AI Agent 执行测试、分析失败并验证修复
 | 编辑器语言能力 | 已接入 LSP、补全、语法高亮和格式化，Python 共用项目解释器解析 |
 | 终端与调试 | 已接入 Snacks 终端、Python DAP 和调试界面 |
 | tmux 协作 | 使用 tmux 组织终端与编辑器，配置了 vim-tmux-navigator；跨窗格导航需配合 tmux 端设置 |
-| AI 辅助 | 已有基于本机 Claude CLI 的文件问答与选区翻译入口 |
+| AI 辅助 | 已接入独立 agent.nvim 插件，提供常驻终端及 Codex 修改跟随、文件清单和红绿 diff |
 | Agent 测试流程 | 作为目标工作方式，由终端中的 Agent 执行；仓库尚未实现统一的测试委派与结果回传机制 |
-| Codex 集成 | 计划在 Neovim 中提供调用入口，具体插件形态和交互方式尚未确定 |
+| Codex 集成 | 已实现 CLI 唤起、聚焦、隐藏和单会话复用；更深的编辑器上下文集成仍在规划 |
 | 减少 tmux 依赖 | 长期希望由 Neovim 承载所需的终端与 Agent 交互，目前继续保留 tmux |
 
 Codex 集成希望连接“编辑上下文、Agent 任务、代码改动、测试结果和审查”。如何传递上下文、展示任务进度、处理会话以及呈现结果，仍需要结合实际使用确定。
@@ -57,7 +57,7 @@ Codex 集成希望连接“编辑上下文、Agent 任务、代码改动、测�
 | Git 审查与提交 | Gitsigns、Diffview、Neogit、Flog、Fugitive |
 | 会话恢复 | resession.nvim |
 
-配置会持续调整。插件是否启用，以 [lua/plugins](lua/plugins) 中的声明为准。
+配置会持续调整。插件是否启用，以 [lua/plugins](lua/plugins) 中的声明为准。三端统一配色已独立为 [dev-theme.nvim](https://github.com/WYJRichhhhh/dev-theme.nvim)，可单独安装，不依赖本仓库。
 
 ## 开始使用
 
@@ -88,7 +88,7 @@ nvim
 :checkhealth
 ```
 
-Python 项目优先使用项目内的 `.venv`。LSP 和调试共用 [core.python](lua/core/python.lua) 的解释器解析，格式化由 Ruff 提供。Claude 问答功能需要本机已有可用的 `claude` CLI；Codex 集成属于后续计划。
+Python 项目优先使用项目内的 `.venv`。LSP 和调试共用 [core.python](lua/core/python.lua) 的解释器解析，格式化由 Ruff 提供。Agent 功能需要本机已有可用的 `claude` 或 `codex` CLI，沿用各自登录状态。
 
 这是一套个人工作流配置，语言工具和外部命令仍需根据自己的开发环境准备。
 
@@ -112,8 +112,16 @@ Python 项目优先使用项目内的 `.venv`。LSP 和调试共用 [core.python
 | `<leader>rp` | 使用项目解释器运行当前 Python 文件 |
 | `<leader>db` / `<leader>dc` | 切换断点 / 启动或继续调试 |
 | `<leader>gg` / `<leader>gv` | 打开 Neogit / 切换差异查看器 |
-| `<leader>aa` | 基于当前文件向 Claude 提问 |
-| 可视模式下 `<leader>at` | 将选区交给 Claude 进行翻译讲解 |
+| `<leader>tt` / `:DevTheme` | 实时预览并统一切换 Ghostty、tmux、Neovim 主题 |
+| `<leader>aa` / `Alt-a` | 启动或聚焦 Agent，已聚焦时隐藏并保留会话 |
+| `<leader>as` | 选择 Claude Code / Codex 后端，运行中切换需确认 |
+| `<leader>ar` / `<leader>ad` | Telescope 搜索会话修改、预览差异 / 整轮红绿对比 |
+| `<leader>ag` | 选择 worktree 查看当前 Git 差异（含已有修改） |
+| `<leader>aD` / `<leader>ah` | 选定文件差异 / 本次会话内历史轮次 |
+| `<leader>af` / `<leader>ae` | 切换自动跟随 / 聚焦修改文件 |
+| `<leader>an` / `<leader>ap` | 源文件中下一处 / 上一处修改 |
+| `:Agent resume codex` | Codex 退出后选择历史对话，刷新 CLI 配色并继续工作 |
+| `:Agent stop` / `:Agent status` | 停止会话 / 查看后端、启动目录和进程状态 |
 
 工作目录、资源面板目录和 LSP 项目根分别维护。在面板里浏览不会自动切换工作目录；按 `g=` 才会执行切换。已启动的 shell 和 LSP 会话也有各自的目录状态。
 
@@ -131,8 +139,13 @@ Python 项目优先使用项目内的 `.venv`。LSP 和调试共用 [core.python
 | --- | --- |
 | [Vim 和 Neovim 心智模型](docs/vim-mental-model.md) | buffer、窗口、编辑语法、状态、LSP 与运行时机制 |
 | [init.lua 启动配置详解](docs/init-lua-guide.md) | Lua 基础、Neovim 接口、require、lazy 配置和插件生命周期 |
+| [三端统一主题](docs/dev-theme.md) | 26 套主题实时预览、透明度、安装与恢复 |
 | [Python 开发指南](docs/python_development.md) | 早期 Python 工作流记录；部分工具、测试集成和快捷键待同步，以当前配置为准 |
 | [Git 工具使用指南](docs/git_tools.md) | Git 变更、差异和历史浏览的操作参考，具体键位以当前插件配置为准 |
+
+Codex 修改跟踪已在本配置开启，需要 Node.js 22+ 及支持 App Server 的 Codex（已验证 0.163.0）。右侧保留原生 TUI，左侧查看修改；阅读代码时保留视图，回到 Agent 后自动跟到最新修改；开始编辑才暂停自动跟随，不覆盖未保存内容。CLI 输入状态先按 `Ctrl-\`、`Ctrl-n`，再使用上述普通模式快捷键；`:Agent help` 有完整指南。Claude 仍使用终端模式。Codex 同时用 Git 快照补充脚本修改，支持同项目 worktree；旧任务可用 `<leader>ag` 检查当前差异。tmux zoom 自动重算窗口，Agent 聚焦时接收滚轮、离开后恢复原鼠标设置。
+
+Agent 已独立发布为 [agent.nvim](https://github.com/WYJRichhhhh/agent.nvim)，详细配置、shell/目录继承与单会话规则见 [中文说明](https://github.com/WYJRichhhhh/agent.nvim/blob/main/README.zh-CN.md)。本机优先加载与 nvim 同级的插件 checkout，其他机器由 lazy.nvim 安装。旧版单次 Claude 问答与翻译入口已移除。
 
 ## 配置结构
 

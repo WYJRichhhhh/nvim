@@ -216,11 +216,14 @@ return {
                     },
                 },
             },
-            routes = {},
+            routes = {
+                -- 配色已有直观反馈，成功确认只用底部轻量消息；错误仍按原路由显示。
+                { filter = { event = "msg_show", find = "^三端已应用：" }, view = "mini" },
+            },
             status = {},
             format = {},
         })
-        
+
         -- 添加快捷键查看info级别的消息
         vim.keymap.set("n", "<leader>ni", "<cmd>Noice info<cr>", { desc = "查看信息级别的消息" })
     end,

@@ -28,7 +28,7 @@ opt.cursorline = true
 
 -- 外观设置
 opt.termguicolors = true -- 启用24位色
-opt.background = "dark" -- 使用深色主题
+-- 明暗由主题配置统一维护，避免启动后把浅色主题重新标记为 dark。
 opt.signcolumn = "yes" -- 总是显示signcolumn,避免代码抖动
 
 -- 设置退格键可以删除缩进 行尾 行首

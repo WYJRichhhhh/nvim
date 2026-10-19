@@ -5,7 +5,14 @@ return {
         notify.setup({
             max_height = 10,
             max_width = 50,
-            background_colour = "NotifyBackground",
+            -- Normal 在透明主题下没有 bg，不能用它做渐隐动画的混合底色。
+            -- 动态读取浮窗主题底色，切换后也不缓存上一套颜色。
+            background_colour = function()
+                local float = vim.api.nvim_get_hl(0, { name = "NormalFloat", link = false })
+                local normal = vim.api.nvim_get_hl(0, { name = "Normal", link = false })
+                local bg = float.bg or normal.bg or (vim.o.background == "light" and 0xffffff or 0x16181a)
+                return ("#%06x"):format(bg)
+            end,
             fps = 30,
             icons = {
                 DEBUG = "",
