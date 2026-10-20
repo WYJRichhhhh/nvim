@@ -116,10 +116,11 @@ Python 项目优先使用项目内的 `.venv`。LSP 和调试共用 [core.python
 | `<leader>aa` / `Alt-a` | 启动或聚焦 Agent，已聚焦时隐藏并保留会话 |
 | `<leader>as` | 选择 Claude Code / Codex 后端，运行中切换需确认 |
 | `<leader>ar` / `<leader>ad` | Telescope 搜索会话修改、预览差异 / 整轮红绿对比 |
+| `<leader>al` / `<leader>ac` | Agent 讲解位置列表 / 清除讲解高亮 |
 | `<leader>ag` | 选择 worktree 查看当前 Git 差异（含已有修改） |
 | `<leader>aD` / `<leader>ah` | 选定文件差异 / 本次会话内历史轮次 |
-| `<leader>af` / `<leader>ae` | 切换自动跟随 / 聚焦修改文件 |
-| `<leader>an` / `<leader>ap` | 源文件中下一处 / 上一处修改 |
+| `<leader>af` / `<leader>ae` | 切换修改跟随 / 聚焦讲解或修改文件 |
+| `<leader>an` / `<leader>ap` | 下一处 / 上一处讲解片段或修改 |
 | `:Agent resume codex` | Codex 退出后选择历史对话，刷新 CLI 配色并继续工作 |
 | `:Agent stop` / `:Agent status` | 停止会话 / 查看后端、启动目录和进程状态 |
 
@@ -145,6 +146,8 @@ Python 项目优先使用项目内的 `.venv`。LSP 和调试共用 [core.python
 | [Git 工具使用指南](docs/git_tools.md) | Git 变更、差异和历史浏览的操作参考，具体键位以当前插件配置为准 |
 
 Codex 和 Claude 修改跟踪已在本配置开启：都需要 Node.js 22+；Codex 使用 App Server（已验证 0.163.0），Claude 使用会话专用 Hooks（已验证 2.1.210）并需要 Git。右侧保留原生 TUI，左侧查看修改；阅读代码时保留视图，回到 Agent 后自动跟到最新修改；开始编辑才暂停自动跟随，不覆盖未保存内容。CLI 输入状态先按 `Ctrl-\`、`Ctrl-n`，再使用上述普通模式快捷键；`:Agent help` 有完整指南。Claude 需允许 Hooks；非 Git 目录只跟踪已接入文件工具的修改。两种后端都可用 Git 快照补充脚本修改，支持同项目 worktree；旧任务可用 `<leader>ag` 检查当前差异。tmux zoom 自动重算窗口，Agent 聚焦时接收滚轮、离开后恢复原鼠标设置。
+
+开启 Codex/Claude 适配器后，插件还会注入会话专用的 `agent_nvim_editor` MCP。可以问「使用 show_code 在左侧打开业务核心代码，标记关键行，先不要修改文件」。讲解保留 Agent 焦点，暂停修改跟随；未保存内容和失效行号会被拒绝。多文件位置用 `al` 选择，`an/ap` 导航，`ac` 清除，`af` 恢复跟随。已有 CLI 需正常重启才能发现工具；原生 MCP 权限/策略仍生效。详见插件中文 README 的代码讲解章节及 `:help agent.nvim-code`。
 
 Agent 已独立发布为 [agent.nvim](https://github.com/WYJRichhhhh/agent.nvim)，详细配置、shell/目录继承与单会话规则见 [中文说明](https://github.com/WYJRichhhhh/agent.nvim/blob/main/README.zh-CN.md)。本机优先加载与 nvim 同级的插件 checkout，其他机器由 lazy.nvim 安装。旧版单次 Claude 问答与翻译入口已移除。
 
