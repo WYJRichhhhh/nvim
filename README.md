@@ -114,6 +114,7 @@ Python 项目优先使用项目内的 `.venv`。LSP 和调试共用 [core.python
 | `<leader>gg` / `<leader>gv` | 打开 Neogit / 切换差异查看器 |
 | `<leader>tt` / `:DevTheme` | 实时预览并统一切换 Ghostty、tmux、Neovim 主题 |
 | `<leader>aa` / `Alt-a` | 启动或聚焦 Agent，已聚焦时隐藏并保留会话 |
+| `Alt-e` | 返回代码窗口，保留 Agent 面板和当前代码视图（支持终端输入模式） |
 | `<leader>as` | 选择 Claude Code / Codex 后端，运行中切换需确认 |
 | `<leader>ar` / `<leader>ad` | Telescope 搜索会话修改、预览差异 / 整轮红绿对比 |
 | `<leader>al` / `<leader>ac` | Agent 讲解位置列表 / 清除讲解高亮 |

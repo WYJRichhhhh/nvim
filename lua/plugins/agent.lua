@@ -21,6 +21,7 @@ return {
             mode = { "n", "t" },
             desc = "唤起/隐藏 AI Agent",
         },
+        { "<M-e>", "<cmd>Agent editor<CR>", mode = { "n", "t" }, desc = "返回代码窗口（保留 Agent）" },
         { "<leader>as", "<cmd>Agent select<CR>", desc = "切换 AI Agent 后端" },
         { "<leader>ar", "<cmd>Agent changes<CR>", desc = "搜索 Agent 会话修改（预览差异）" },
         { "<leader>al", "<cmd>Agent locations<CR>", desc = "Agent 讲解位置列表" },
